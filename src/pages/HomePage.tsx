@@ -6,6 +6,7 @@ import images from '@/assets';
 import PatnerGrid from '@/components/PatnerGrid';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import FAQ from '@/components/Faq';
 
 export default function HomePage() {
   return (
@@ -26,6 +27,7 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+      <FAQ />
       <CategoryGrid />
       <PatnerGrid />
       <Footer />

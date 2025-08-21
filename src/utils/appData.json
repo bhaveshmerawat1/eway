@@ -2,10 +2,10 @@
   "users": [
     {
       "id": 1,
-      "userId":"12345",
+      "userId": "12345",
       "name": "John Doe",
       "role": "nUser",
-      "password":"Test@123"
+      "password": "Test@123"
     },
     {
       "id": 2,
@@ -243,28 +243,50 @@
       "image": "businessEssentials"
     }
   ],
-  "productDetails":[
-      {
-        "id": 1,
-        "name": "Kleenex Professional Facial Tissue - 2-Ply - Flat Facial Tissue Boxes",
-        "brand": "Kleenex",
-        "productNumber": "KCI03076",
-        "image": "https://storage.googleapis.com/staples_canada_assets/c/0/6/e/c06ec2f405d4d562a77bf51360436459d665fde1_square470745_1.png",
-        "category": "Tissue",
-        "shopCanadian": false,
-        "colourFamily": "White",
-        "fscCertified": true
-      },
-      {
-        "id": 2,
-        "name": "Cascades PRO Select Kitchen Roll Towel - 2-Ply - 250 sheets",
-        "brand": "Cascades Pro",
-        "productNumber": "CCDK250",
-        "image": "https://storage.googleapis.com/staples_canada_assets/0/a/4/f/0a4f55dbe144e504a0e53d3d213b3813118eebbd_square3034586_1.png",
-        "category": "Towel",
-        "shopCanadian": true,
-        "colourFamily": "White",
-        "fscCertified": false
-      }
+  "productDetails": [
+    {
+      "id": 1,
+      "name": "Kleenex Professional Facial Tissue - 2-Ply - Flat Facial Tissue Boxes",
+      "brand": "Kleenex",
+      "productNumber": "KCI03076",
+      "image": "https://storage.googleapis.com/staples_canada_assets/c/0/6/e/c06ec2f405d4d562a77bf51360436459d665fde1_square470745_1.png",
+      "category": "Tissue",
+      "shopCanadian": false,
+      "colourFamily": "White",
+      "fscCertified": true
+    },
+    {
+      "id": 2,
+      "name": "Cascades PRO Select Kitchen Roll Towel - 2-Ply - 250 sheets",
+      "brand": "Cascades Pro",
+      "productNumber": "CCDK250",
+      "image": "https://storage.googleapis.com/staples_canada_assets/0/a/4/f/0a4f55dbe144e504a0e53d3d213b3813118eebbd_square3034586_1.png",
+      "category": "Towel",
+      "shopCanadian": true,
+      "colourFamily": "White",
+      "fscCertified": false
+    }
+  ],
+  "faqs": [
+    {
+      "question": "Why move to a new website?",
+      "answer": "We want to serve you better. The Monarch site is built with enhanced functionality, which will provide an improved and more secure user experience. Some of the new features we're most excited about are:",
+      "answerone": "- Enhanced order tracking capabilities.\n- Exclusive deals and offers.\n- Access to thousands of new products and brands you trust."
+    },
+    {
+      "question": "Do I need to create a profile/account to buy from Monarch?",
+      "answer": "No, you do not need to create a profile. All your account information, along with order history, favorites lists, and more, have been migrated over to your new shopping experience. Please use your current Monarch credentials (user ID or Email and password combination) to log in to your account.",
+      "answerone": ""
+    },
+    {
+      "question": "How do I change my passwords?",
+      "answer": "",
+      "answerone": "Click here to reset your password from the sign-in module\nThere are 2 ways to open the Change Password screen:\n- Click on the \"Account\" menu, hover on the \"My Account\" tab and select option \"Change My Password.\"\n- Click on the \"Account\" menu, hover on the \"My Account\" tab, and select option \"Edit My Profile.\"\n- Click on \"Change My Password.\"\nIn the Change Password screen, enter your existing password (the one you used to sign in). Then, enter your new password and confirm it by entering it a second time.\nYour new password must have at least 7 characters, letters and/or numbers, upper and/or lower case, and must be different from your User ID and previously used passwords. Please note that the same restrictions do not apply to migrated passwords.\nIf you have forgotten your password, then please reset it by clicking on the \"Forgot Password\" when you open the Sign In module. You will be asked to provide your User ID. Given you have provided a valid user ID, and clicked \"Get New Password\", then an email will be sent to your registered email address with instructions on resetting your password."
+    },
+    {
+      "question": " Is Monarch Customer Service still local?",
+      "answer": "Yes! Our award-winning Customer Service team is still right here in Windsor. We look forward to continuing to provide the level of care and shopping experience you’re used to!",
+      "answerone": ""
+    }
   ]
 }
