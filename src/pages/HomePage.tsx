@@ -7,6 +7,7 @@ import PatnerGrid from '@/components/PatnerGrid';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import FAQ from '@/components/Faq';
+import Button from '@/components/Button';
 
 export default function HomePage() {
   return (
@@ -24,6 +25,15 @@ export default function HomePage() {
               <Image alt='advertiment banner' src={images.adsImg2} className='w-full h-full object-position' fill
                 quality={100} />
             </a>
+          </div>
+          <div className='w-full my-4 bg-red-100 py-8'>
+            <h1 className='font-semibold text-[15px] text-black text-center mb-2'>Ready to shop?</h1>
+            <p className='font-medium text-[17px] text-black text-center mb-2 tracking-[0.3px]'>Sign in or shop as a guest to view prices and product availability.</p>
+          <div className='flex justify-center mt-4 items-center gap-4'>
+              <button children={"Sign In"} onClick={() => { }} className='md:rounded-3xl bg-red-600 text-white md:py-2 md:px-6 border border-red-600 hover:bg-white hover:text-red-600 md:text-[14px] transition-all 
+							duration-400 ease-in-out font-myfont font-medium' />
+              <Button children={"Shop as Guest"} onClick={() => { }} className='md:rounded-3xl md:py-2 md:px-6 md:text-[14px] md:font-medium' />
+          </div>
           </div>
         </div>
       </div>

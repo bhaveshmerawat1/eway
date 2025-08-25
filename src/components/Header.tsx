@@ -32,7 +32,7 @@ const Header = () => {
 								/>
 
 								{/* Search Button */}
-								<button className="bg-gray-800 px-2 flex items-center justify-center"
+								<button aria-label='Search' className="bg-gray-800 px-2 flex items-center justify-center"
 									type='button'
 								>
 									{/* Search Icon (Heroicons) */}

@@ -14,19 +14,6 @@ function Footer() {
 					</div>
 				</div>
 
-				{/* Middle Links */}
-				<div className="flex flex-wrap gap-6">
-					<a href="#" className="hover:underline font-sans text-md">
-						Terms & Conditions
-					</a>
-					<a href="#" className="hover:underline font-sans text-md">
-						Privacy Notice
-					</a>
-					<a href="#" className="hover:underline font-sans text-md">
-						Accessibility
-					</a>
-				</div>
-
 				{/* Language */}
 				<div>
 					<span className="font-bold mr-1 font-sans text-md">Language</span>
@@ -37,9 +24,9 @@ function Footer() {
 
 				{/* Social Icons */}
 				<div className="flex gap-4 text-xl text-gray-700">
-					<a href="#" aria-label="LinkedIn" className="hover:text-gray-900">
+					<Link href="#" aria-label="LinkedIn" className="hover:text-gray-900">
 						<FaLinkedinIn />
-					</a>
+					</Link>
 					<a href="#" aria-label="X" className="hover:text-gray-900">
 						<RxCross2 />
 					</a>
@@ -56,8 +43,19 @@ function Footer() {
 			</div>
 
 			{/* Bottom copyright */}
-			<div className="border-t border-gray-200 py-4 text-center text-sm text-gray-600 font-sans">
+			<div className="border-t border-gray-200 py-5 text-center text-sm text-white font-sans bg-gray-444">
 				© Copyright 2025 My Eway. All rights reserved.
+				<div className="flex flex-wrap gap-6 justify-center my-2">
+					<a href="#" className="hover:underline font-myfont text-md">
+						Terms & Conditions
+					</a>
+					<a href="#" className="hover:underline font-myfont text-md">
+						Privacy Notice
+					</a>
+					<a href="#" className="hover:underline font-myfont text-md">
+						Accessibility
+					</a>
+				</div>
 			</div>
 		</footer>
 	)

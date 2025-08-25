@@ -82,3 +82,7 @@ a {
 .colorGreen{
   color: #01787a;
 }
+
+.bg-gray-444{
+  background-color: #444444;
+}
