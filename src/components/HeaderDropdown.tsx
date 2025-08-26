@@ -80,12 +80,15 @@ const HeaderDropdown = () => {
 
 					<button className="flex-col items-center flex space-x-1"
 						type="submit"
+						aria-label='logout'
 						onClick={logout}>
 						<RiUser6Line className='text-gray-600 text-[16px]' />
 						<span className='text-[12px] text-gray-600'>Log Out</span>
 					</button>
 				) : <button className="flex-col items-center flex space-x-1"
 					type="submit"
+					aria-label='signin'
+					data-testid='signinBtn'
 					onMouseEnter={() => handleHover('signin')}
 					onClick={() => {
 						setOpenDropdown(prev =>
@@ -100,14 +103,16 @@ const HeaderDropdown = () => {
 					<div className="absolute top-full w-72 shadow-lg py-4 transition duration-100 ease-in right-0 bg-gray-c border-t-1 border-gray-light z-3">
 						<div className="font-bold mb-2 flex justify-between border-b-1 border-gray-light px-4 pb-2">
 							<p className='text-[16px] font-semibold'>Sign in</p>
-							<button type='submit' className='text-[12px] leading-[12px] p-1' onClick={() => handleHover(null)}><span>Close</span></button>
+							<button type='submit' aria-label='Close' className='text-[12px] leading-[12px] p-1' onClick={() => handleHover(null)}><span>Close</span></button>
 						</div>
-						<form onSubmit={handleSubmit} className="px-4 py-1">
+						<form aria-label='handlesubmit' data-testid="formSubmit" onSubmit={handleSubmit} className="px-4 py-1">
 							{/* User ID */}
 							<div className='mb-2'>
-								<label className="block mb-1 text-[12px] text-color ">User ID</label>
+								<label htmlFor='userId' className="block mb-1 text-[12px] text-color ">User ID</label>
 								<input
 									type="text"
+									data-testid='userId'
+									aria-label='userId'
 									value={userId}
 									onChange={(e) => {
 										setUserId(e.target.value);
@@ -128,11 +133,12 @@ const HeaderDropdown = () => {
 
 							{/* Password */}
 							<div className='mb-2'>
-								<label className="block mb-1 text-[12px] text-color">Password</label>
+								<label htmlFor='password' className="block mb-1 text-[12px] text-color">Password</label>
 								<div className="relative">
 									<input
 										type={showPassword ? 'text' : 'password'}
 										value={password}
+										aria-label='password'
 										onChange={(e) => {
 											setPassword(e.target.value)
 											if (errors.password && e.target.value.trim()) {
@@ -144,6 +150,7 @@ const HeaderDropdown = () => {
 									/>
 									<button
 										type="button"
+										aria-label='toggle password visibility'
 										onClick={() => setShowPassword(!showPassword)}
 										className="absolute right-2 top-2 text-gray-500 cursor-pointer text-lg"
 									>
@@ -164,6 +171,7 @@ const HeaderDropdown = () => {
 									id="saveUser"
 									type="checkbox"
 									checked={saveUser}
+									aria-label='saveUserId'
 									onChange={(e) => setSaveUser(e.target.checked)}
 									className="mr-2 h-[16px] w-[16px] accent-red-400"
 								/>
@@ -175,6 +183,7 @@ const HeaderDropdown = () => {
 							{/* Submit */}
 							<button
 								type="submit"
+								aria-label='submit'
 								className="w-full text-[13px] border font-medium bg-red-600 text-white rounded-full py-2 my-1 hover:bg-white transition hover:border hover:border-red-600 hover:text-red-600"
 							>
 								Sign in
@@ -200,10 +209,14 @@ const HeaderDropdown = () => {
 			{/* Help */}
 			<div
 				className="relative border-l-1 border-gray-light px-3 py-4"
-				onMouseEnter={() => handleHover('help')}
-				onMouseLeave={() => handleHover(null)}
 			>
-				<button className="flex-colspace-x-1 hover:text-red-600 px-2 flex flex-col items-center text-[12px]">
+				<button className="flex-colspace-x-1 hover:text-red-600 px-2 flex flex-col items-center text-[12px]"
+					data-testid='helpBtn'
+					aria-label='help'
+					type='button'
+					onMouseEnter={() => handleHover('help')}
+					onMouseLeave={() => handleHover(null)}
+					>
 					<FaRegComment className='text-gray-600 text-[16px]' />
 					<span className='text-xs text-gray-600' >Help</span>
 				</button>
@@ -211,13 +224,13 @@ const HeaderDropdown = () => {
 					<div className="absolute top-full w-60 shadow-lg transition duration-100 ease-in right-0 bg-gray-c border-t-1 border-gray-light z-2">
 						<ul className="space-y-1 fonat-sans">
 							<li className="border-b-1 border-gray-c hover:bg-white cursor-pointer group">
-								<a href='#' className='text-sm font-semibold p-2 group-hover:text-red-600'>Contact Us</a>
+								<a href='#' aria-label='contactus' className='text-sm font-semibold p-2 group-hover:text-red-600'>Contact Us</a>
 							</li>
 							<li className="border-b-1 border-gray-c hover:bg-white cursor-pointer group">
-								<a href='#' className='text-sm font-semibold p-2 group-hover:text-red-600'>Help Center</a>
+								<a href='#' aria-label='helpcenter' className='text-sm font-semibold p-2 group-hover:text-red-600'>Help Center</a>
 							</li>
 							<li className="border-b-1 border-gray-c hover:bg-white cursor-pointer group">
-								<a href='#' className='text-sm font-semibold p-2 group-hover:text-red-600'>Recall Information </a></li>
+								<a href='#' aria-label='recall information' className='text-sm font-semibold p-2 group-hover:text-red-600'>Recall Information </a></li>
 						</ul>
 					</div>
 				)}
@@ -226,10 +239,11 @@ const HeaderDropdown = () => {
 			{/* Cart */}
 			<div
 				className="relative border-l-1 border-gray-light bg-red-700 px-3 py-4"
-				onMouseEnter={() => handleHover('cart')}
-				onMouseLeave={() => handleHover(null)}
 			>
-				<button className="space-x-1 hover:text-red-600 px-2 flex flex-col items-center text-[12px]">
+				<button className="space-x-1 hover:text-red-600 px-2 flex flex-col items-center text-[12px]"
+					onMouseEnter={() => handleHover('cart')}
+					onMouseLeave={() => handleHover(null)}
+					aria-label='cart'>
 					<PiShoppingCartLight className='text-white text-[16px]' />
 					<span className='text-white' >Cart</span>
 				</button>
@@ -251,7 +265,7 @@ const HeaderDropdown = () => {
 				<div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
 					<div className="bg-white p-6 rounded-lg shadow-lg text-center">
 						<h3 className="text-xl font-bold text-color">{showError}</h3>
-						<Button children={"ok"} className='my-3' onClick={() => setShowModal(false)} />
+						<Button children={"ok"} aria-label="modal close" className='my-3' onClick={() => setShowModal(false)} />
 					</div>
 				</div>
 			)}
