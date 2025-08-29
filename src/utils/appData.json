@@ -288,5 +288,37 @@
       "answer": "Yes! Our award-winning Customer Service team is still right here in Windsor. We look forward to continuing to provide the level of care and shopping experience you’re used to!",
       "answerone": ""
     }
+  ],
+  "navItems": [
+    {
+      "id": 1,
+      "name": "Products",
+      "link": "/products"
+    },
+    {
+      "id": 2,
+      "name": "Services & Solutions",
+      "link": "/services-and-solutions"
+    },
+    {
+      "id": 3,
+      "name": "Brands",
+      "link": "/brands"
+    },
+    {
+      "id": 4,
+      "name": "Deals",
+      "link": "/deals"
+    },
+    {
+      "id": 5,
+      "name": "Publications",
+      "link": "/publications"
+    },
+    {
+      "id": 6,
+      "name": "Become A Customer",
+      "link": "/become-a-customer"
+    }
   ]
 }

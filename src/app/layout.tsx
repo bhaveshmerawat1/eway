@@ -56,7 +56,7 @@ export default function RootLayout({
     <html lang="en">
       <ReduxProvider>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} ${myFont.variable} antialiased`}
+          className={`${myFont.variable} antialiased`}
         >
           <AppProvider>{children}</AppProvider>
         </body>
