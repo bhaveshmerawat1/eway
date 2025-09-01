@@ -13,10 +13,16 @@ import Link from 'next/link';
 
 const HeaderDropdown = () => {
 	const { logout, login, authUser } = useApp();
+	const [formState, setFormState] = useState({
+		userId: "",
+		password: "",
+		saveUser: false,
+		showPassword: false,
+	});
 	const [errors, setErrors] = useState<{ userId?: string; password?: string }>({});
 	const [loading, setLoading] = useState(false);
 	const [showModal, setShowModal] = useState(false);
-	const [showError, setShowError] = useState('')
+	const [showError, setShowError] = useState('');
 	const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 	
 	// Handle hover for dropdowns
@@ -24,24 +30,34 @@ const HeaderDropdown = () => {
 		setOpenDropdown(section);
 	};
 
-	// Handle form submission
+	// Form validation
+	const validateForm = () => {
+		const newErrors: { userId?: string; password?: string } = {};
+		if (!formState.userId.trim()) {
+			newErrors.userId = "Please enter a valid ID";
+		}
+		if (!formState.password.trim()) {
+			newErrors.password = "Please enter a valid password";
+		}
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		// Validate form before submitting
-		if (!errors.userId && !errors.password) {
-			setLoading(true);
-			try {
-				const success = await login("12345", "Test@123");
-				setLoading(false);
-				setShowError(
-					success ? "🎉 Login successful!" : "❌ Invalid credentials."
-				);
-				setShowModal(true);
-			} catch {
-				setLoading(false);
-				setShowError("⚠️ Something went wrong.");
-				setShowModal(true);
-			}
+		if (!validateForm()) return;
+		setLoading(true);
+		try {
+			const success = await login(formState.userId, formState.password);
+			setShowError(success ? "🎉 Login successful!" : "❌ Invalid credentials.");
+			setOpenDropdown(null);
+		} catch {
+			setShowError("⚠️ Something went wrong.");
+			setOpenDropdown(null);
+		} finally {
+			setLoading(false);
+			setShowModal(true);
+			setOpenDropdown(null);
 		}
 	};
 
@@ -86,13 +102,12 @@ const HeaderDropdown = () => {
 					children={
 						<SignInForm
 							onSubmit={handleSubmit}
+							loading={loading}
+							errors={errors}
 							setErrors={setErrors}
 							onClickCloseBtn={() => handleHover(null)}
-							loading={false}
-							errors={{
-								userId: errors.userId,
-								password: errors.password
-							}}
+							formState={formState}
+							setFormState={setFormState}
 						/>
 					}
 				/>
@@ -107,6 +122,7 @@ const HeaderDropdown = () => {
 					arialabel='help'
 					type='button'
 					onMouseEnter={() => handleHover('help')}
+					onButtonClick={() => handleHover(null)}
 					children={"Help"}
 					icon={<FaRegComment className='text-[16px]' />}
 				/>
@@ -135,6 +151,7 @@ const HeaderDropdown = () => {
 					arialabel='Cart'
 					type='button'
 					onMouseEnter={() => handleHover('cart')}
+					onButtonClick={() => handleHover(null)}
 					children={"Cart"}
 					icon={<PiShoppingCartLight className='text-[16px]' />}
 				/>

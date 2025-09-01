@@ -3,10 +3,10 @@ import { useState } from "react";
 import { FaCaretDown, FaCaretRight } from "react-icons/fa";
 import {faqs} from "../utils/appData.json"
 
-
+// FAQ Component
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-
+  // Toggle FAQ item
   const toggle = (idx: number) => {
     setOpenIndex(openIndex === idx ? null : idx);
   };

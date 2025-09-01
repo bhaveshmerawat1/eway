@@ -7,26 +7,35 @@ interface SignInFormProps {
   onSubmit?: (e: React.FormEvent) => void;
   loading: boolean;
   errors: { userId?: string; password?: string };
+  userIdNPassword?: { userId: string; password: string };
   setErrors: React.Dispatch<
     React.SetStateAction<{ userId?: string; password?: string }>
   >;
   onClickCloseBtn?: () => void;
+  formState: {
+    userId: string;
+    password: string;
+    saveUser: boolean;
+    showPassword: boolean;
+  };
+  setFormState: React.Dispatch<React.SetStateAction<{
+    userId: string;
+    password: string;
+    saveUser: boolean;
+    showPassword: boolean;
+  }>>;
 }
-
+// SignInForm Component
 const SignInForm: React.FC<SignInFormProps> = ({
   onSubmit,
   loading,
   errors,
   setErrors,
-  onClickCloseBtn
+  onClickCloseBtn,
+  formState, 
+  setFormState
 }) => {
-  const [formState, setFormState] = useState({
-    userId: "",
-    password: "",
-    saveUser: false,
-    showPassword: false,
-  });
-
+  // Handle input changes
   const handleChange = (key: string, value: any) => {
     setFormState((prev) => ({
       ...prev,

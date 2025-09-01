@@ -1,6 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 
+// Loader Component Props
 interface LoaderProps {
   isLoading: boolean;
   size?: "sm" | "md" | "lg" | string;
@@ -9,6 +10,7 @@ interface LoaderProps {
   loaderFullScreen?: boolean;
 };
 
+// Loader Component
 const Loader: React.FC<LoaderProps> = ({
   isLoading,
   size = "md",
@@ -17,13 +19,13 @@ const Loader: React.FC<LoaderProps> = ({
   loaderFullScreen = false,
 }) => {
   if (!isLoading) return null;
-
+  // Determine size classes
   const sizeClasses = {
     sm: "h-4 w-4 border-2",
     md: "h-6 w-6 border-2",
     lg: "h-10 w-10 border-4",
   };
-
+  // Resolve size class
   const resolvedSizeClass =
     size in sizeClasses
       ? sizeClasses[size as keyof typeof sizeClasses]

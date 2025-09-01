@@ -28,7 +28,7 @@ const Header = () => {
 
 						<div className='flex w-full max-w-3/4 items-center'>
 							{/* Search Bar */}
-							<SearchBar isSearchButton onSearch={(e: string) => { searchSubmit(e) }} placeholder='Search for all your business needs' />
+							<SearchBar isSearchButton onSearch={searchSubmit} placeholder='Search for all your business needs' />
 							{/* Ink & Toner Button */}
 							<Button children={"Ink & Toner"}
 								className='ml-3 h-[36px] text-[14px]'

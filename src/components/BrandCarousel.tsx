@@ -7,6 +7,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import Image from 'next/image';
 import images from '@/assets';
+import Link from 'next/link';
 
 const slides = [
   {
@@ -56,8 +57,8 @@ function BrandCarousel() {
         {slides.map((slide, index) => (
           <SwiperSlide key={index}>
             <div className="flex items-center justify-between bg-gray-50 h-full py-3 my-3">
-              <a href='/products' className='h-full w-full relative block'><Image src={slide.img} alt="BannerImage"  fill
-  quality={100} className='block w-full h-auto object-position' /></a>
+              <Link href='/products' className='h-full w-full relative block'><Image src={slide.img} alt="BannerImage"  fill
+  quality={100} className='block w-full h-auto object-position' /></Link>
             </div>
           </SwiperSlide>
         ))}
