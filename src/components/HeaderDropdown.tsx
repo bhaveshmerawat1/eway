@@ -10,6 +10,7 @@ import DropdownWrapper from './Dropdown/DropdownWrapper';
 import SignInForm from './LoginSignUp/SignInForm';
 import List from './Listing/Listing';
 import Link from 'next/link';
+import useToggle from '@/hooks/useToggle';
 
 const HeaderDropdown = () => {
 	const { logout, login, authUser } = useApp();
@@ -23,12 +24,9 @@ const HeaderDropdown = () => {
 	const [loading, setLoading] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 	const [showError, setShowError] = useState('');
-	const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+	// Custom hook for dropdown open and close 
+	const { toggleDropdown, closeDropdown, isOpen } = useToggle<string | null>(null);
 	
-	// Handle hover for dropdowns
-	const handleHover = (section: string | null) => {
-		setOpenDropdown(section);
-	};
 
 	// Form validation
 	const validateForm = () => {
@@ -50,14 +48,15 @@ const HeaderDropdown = () => {
 		try {
 			const success = await login(formState.userId, formState.password);
 			setShowError(success ? "🎉 Login successful!" : "❌ Invalid credentials.");
-			setOpenDropdown(null);
+			toggleDropdown(null)
+
 		} catch {
 			setShowError("⚠️ Something went wrong.");
-			setOpenDropdown(null);
+			toggleDropdown(null)
 		} finally {
 			setLoading(false);
 			setShowModal(true);
-			setOpenDropdown(null);
+			toggleDropdown(null)
 		}
 	};
 
@@ -87,17 +86,13 @@ const HeaderDropdown = () => {
 						icon={<RiUser6Line className='text-[16px]' />}
 						arialabel='signin'
 						loading={loading}
-						onMouseEnter={() => handleHover('signin')}
-						onButtonClick={() => {
-							setOpenDropdown(prev =>
-								prev === 'signin' ? null : 'signin'
-							);
-						}}
+						onMouseEnter={() => toggleDropdown("signin")}
+						onButtonClick={() => toggleDropdown("signin")}
 					/>
 				}
 				{/*Signin Dropdown */}
 				<DropdownWrapper
-					isOpen={openDropdown === 'signin'}
+					isOpen={isOpen("signin")}
 					className="w-72 sm:right-0"
 					children={
 						<SignInForm
@@ -105,7 +100,7 @@ const HeaderDropdown = () => {
 							loading={loading}
 							errors={errors}
 							setErrors={setErrors}
-							onClickCloseBtn={() => handleHover(null)}
+							onClickCloseBtn={closeDropdown}
 							formState={formState}
 							setFormState={setFormState}
 						/>
@@ -121,14 +116,14 @@ const HeaderDropdown = () => {
 					data-testid='helpBtnMobile'
 					arialabel='help'
 					type='button'
-					onMouseEnter={() => handleHover('help')}
-					onButtonClick={() => handleHover(null)}
+					onMouseEnter={() => toggleDropdown('help')}
+					onButtonClick={() => toggleDropdown('help')}
 					children={"Help"}
 					icon={<FaRegComment className='text-[16px]' />}
 				/>
 
 				<DropdownWrapper
-					isOpen={openDropdown === 'help'}
+					isOpen={isOpen('help')}
 					className="w-72 sm:py-1 sm:right-0"
 					children={
 						<List
@@ -150,13 +145,13 @@ const HeaderDropdown = () => {
 					data-testid='CartBtnMobile'
 					arialabel='Cart'
 					type='button'
-					onMouseEnter={() => handleHover('cart')}
-					onButtonClick={() => handleHover(null)}
+					onMouseEnter={() => toggleDropdown('cart')}
+					onButtonClick={() => toggleDropdown(null)}
 					children={"Cart"}
 					icon={<PiShoppingCartLight className='text-[16px]' />}
 				/>
 				<DropdownWrapper
-					isOpen={openDropdown === 'cart'}
+					isOpen={isOpen('cart')}
 					className="w-70 sm:border-t-3 md:border-red-600 md:p-8 sm:right-0"
 					children={
 						<p className="text-sm">To use this feature, please sign in or become a customer</p>
