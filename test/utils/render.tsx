@@ -1,15 +1,15 @@
-import { AppProvider } from '@/context/AppContext';
+import { EmployeeProvider } from '@/context/EmployeeContext';
 import { render, RenderOptions } from '@testing-library/react';
 import React, { ReactElement } from 'react';
 import "@testing-library/jest-dom";
 
 const AllProviders = ({ children }: { children: React.ReactNode }) => {
-  console.log('Rendering with AppProvider', AppProvider);
+  console.log('Rendering with AppProvider', EmployeeProvider);
   return (
     <>
-      <AppProvider >
+      <EmployeeProvider >
       {children}
-      </AppProvider>
+      </EmployeeProvider>
     </>
   );
 };
