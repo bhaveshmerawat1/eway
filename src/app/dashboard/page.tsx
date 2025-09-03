@@ -43,8 +43,9 @@ function DashboardPage() {
         </div>
         {/* Search bar */}
         <SearchBar value={query} onChange={setQuery} />
-        <div style={{ height: 14 }} />
         
+        <div style={{ height: 14 }} />
+
         {/* Employee table */}
         <EmployeeTable
           data={filtered}

@@ -23,7 +23,7 @@ const Modal: React.FC<ModalProps> = ({ open, title, onClose, children, width = 7
           onClick={onClose} 
           variant="secondary" 
           children={"✕"} 
-          arialabel="Close" 
+          arialabel="close" 
           className="modal-button"
            />
         </div>

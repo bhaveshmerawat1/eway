@@ -11,7 +11,7 @@ interface EmployeeContextValue {
   employees: Employee[];
   filtered: Employee[];
   query: string;
-  setQuery: (v: string) => void;
+  setQuery: (val: string) => void;
   highlight: string | null;
 
   addModal: ReturnType<typeof useToggle>;
@@ -119,15 +119,15 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const sortedEmployees = React.useMemo(() => {
-    if (!sortField) return employees;
-    return [...employees].sort((a, b) => {
+    if (!sortField) return filtered;
+    return [...filtered].sort((a, b) => {
       const aValue = a[sortField];
       const bValue = b[sortField];
       if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
       if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
       return 0;
     });
-  }, [employees, sortField, sortOrder]);
+  }, [filtered, sortField, sortOrder]);
 
   // Pagination
   const totalPages = Math.ceil(sortedEmployees.length / itemsPerPage);
