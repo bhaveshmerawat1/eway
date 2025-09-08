@@ -83,7 +83,7 @@ const EmployeeTable: React.FC = () => {
                       children="Delete"
                       type="button"
                       arialabel="deleteBtn"
-                      onClick={() => modalAction.askDelete(item)}
+                      onClick={() => modalAction.askToEmpDelete(item)}
                       variant="danger"
                     />
                   </div>

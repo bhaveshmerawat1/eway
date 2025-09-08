@@ -30,12 +30,12 @@ interface EmployeeContextValue {
     setSort: (field: keyof Employee) => void;
   },
   modalAction: {
-    addModal: ReturnType<typeof useToggle>;
+    employeeFormModal: ReturnType<typeof useToggle>;
     editing: Employee | null;
     setEditing: (emp: Employee | null) => void;
-    confirm: ReturnType<typeof useToggle>;
+    confirmEmployeeDeleteAction: ReturnType<typeof useToggle>;
     toDelete: Employee | null;
-    askDelete: (emp: Employee) => void;
+    askToEmpDelete: (emp: Employee) => void;
     confirmDelete: () => void;
   }
 }
@@ -60,8 +60,8 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [employees, setEmployees] = useState<Employee[]>(() => getLocalStorage(STORAGE_KEYS.EMPLOYEES) || seed);
   const [searchQuery, setSearchQuery] = useState("");
   const [editing, setEditing] = useState<Employee | null>(null);
-  const addModal = useToggle(false);
-  const confirm = useToggle(false);
+  const employeeFormModal = useToggle(false);
+  const confirmEmployeeDeleteAction = useToggle(false);
   const [toDelete, setToDelete] = useState<Employee | null>(null);
   const [sort, setSortState] = useState<{ field: keyof Employee; order: "asc" | "desc" }>({
     field: "firstName",
@@ -85,7 +85,7 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const id = crypto.randomUUID();
     const newEmp: Employee = { id, ...data };
     setEmployees(prev => [newEmp, ...prev]);
-    addModal.close();
+    employeeFormModal.close();
   }
 
   // Update
@@ -95,15 +95,15 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }
 
   // Delete
-  function askDelete(emp: Employee) {
+  function askToEmpDelete(emp: Employee) {
     setToDelete(emp);
-    confirm.open();
+    confirmEmployeeDeleteAction.open();
   }
 
   function confirmDelete() {
     if (!toDelete) return;
     setEmployees(prev => prev.filter(e => e.id !== toDelete.id));
-    confirm.close();
+    confirmEmployeeDeleteAction.close();
     setToDelete(null);
     // If no employees left, clear from storage
     if (employees.length === 1) {
@@ -149,6 +149,7 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     currentPage * itemsPerPage
   );
 
+  // Check initial localstorage is ready or not
   if (!localStorageIsReady) return null;
 
   return (
@@ -175,12 +176,12 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setSort
       },
       modalAction: {
-        addModal,
+        employeeFormModal,
         editing,
         setEditing,
-        confirm,
+        confirmEmployeeDeleteAction,
         toDelete,
-        askDelete,
+        askToEmpDelete,
         confirmDelete,
       }
     }} > {children}</EmployeeContext.Provider>

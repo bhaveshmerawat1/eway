@@ -26,7 +26,7 @@ function DashboardPage() {
           <h2 className="section-title">Employee List</h2>
           <Button
             children={"+ Add New Employee"}
-            onClick={modalAction.addModal.open}
+            onClick={modalAction.employeeFormModal.open}
             type="button"
             variant="primary"
             arialabel="add new employee"
@@ -41,7 +41,7 @@ function DashboardPage() {
       </div>
 
       {/* Add */}
-      <Modal open={modalAction.addModal.isOpen} onClose={modalAction.addModal.close} title="Add Employee">
+      <Modal open={modalAction.employeeFormModal.isOpen} onClose={modalAction.employeeFormModal.close} title="Add Employee">
         <EmployeeForm />
       </Modal>
 
@@ -54,10 +54,10 @@ function DashboardPage() {
 
       {/* Confirm Delete */}
       <ConfirmDialog
-        open={modalAction.confirm.isOpen}
+        open={modalAction.confirmEmployeeDeleteAction.isOpen}
         title="Delete Employee"
         message={`Are you sure you want to delete "${modalAction.toDelete?.firstName} ${modalAction.toDelete?.lastName}"?`}
-        onCancel={() => { modalAction.confirm.close(); modalAction.setEditing(null); }}
+        onCancel={() => { modalAction.confirmEmployeeDeleteAction.close(); modalAction.setEditing(null); }}
         onConfirm={modalAction.confirmDelete}
         confirmText="Delete"
       />
