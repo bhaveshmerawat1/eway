@@ -2,28 +2,45 @@
 import { useEffect, useState } from "react";
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
-  const [value, setValue] = useState<T>(initialValue);
-  const [ready, setReady] = useState(false);
+  const [localStorageIsReady, setLocalStorageIsReady] = useState(false);
 
+  // Load initial value once
   useEffect(() => {
     try {
-      const raw = typeof window !== "undefined" ? localStorage.getItem(key) : null;
-      if (raw) setValue(JSON.parse(raw));
+      if (typeof window !== "undefined" && localStorage.getItem(key) === null) {
+        localStorage.setItem(key, JSON.stringify(initialValue));
+      }
     } catch {
-      // ignore corrupted storage
+      // ignore quota/privacy errors
     } finally {
-      setReady(true);
+      setLocalStorageIsReady(true);
     }
-  }, [key]);
+  }, [key, initialValue]);
 
-  useEffect(() => {
-    if (!ready) return;
+  const getLocalStorage = (k: string): T | null => {
     try {
-      localStorage.setItem(key, JSON.stringify(value));
+      const raw = localStorage.getItem(k);
+      return raw ? (JSON.parse(raw) as T) : null;
     } catch {
-      // quota or privacy mode — fail silently
+      return null;
     }
-  }, [key, ready, value]);
+  };
 
-  return [value, setValue, ready] as const;
+  const setLocalStorage = (k: string, value: T) => {
+    try {
+      localStorage.setItem(k, JSON.stringify(value));
+    } catch {
+      // ignore quota errors
+    }
+  };
+
+  const deleteLocalStorage = (k: string) => {
+    try {
+      localStorage.removeItem(k);
+    } catch {
+      // ignore errors
+    }
+  };
+
+  return { getLocalStorage, setLocalStorage, deleteLocalStorage, localStorageIsReady } as const;
 }

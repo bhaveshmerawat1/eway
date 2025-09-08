@@ -1,47 +1,39 @@
 "use client";
 import React, { useCallback } from "react";
 import Button from "./Button/Button";
-import "@/assets/styles/common.css"
+import "@/assets/styles/common.css";
+import { useEmployees } from "@/context/EmployeeContext";
 
-type Props = {
-  value: string;
-  onChange: (value: string) => void;
-  onSearch?: (value: string) => void;
-  placeholder?: string;
-};
+const SearchBar: React.FC = () => {
+  const { search } = useEmployees();
 
-const SearchBar: React.FC<Props> = ({
-  value,
-  onChange,
-  onSearch,
-  placeholder = "Search employees..."
-
-}) => {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      onChange(e.target.value);
+      search.setSearchQuery(e.target.value);
     },
-    [onChange]
+    [search.setSearchQuery]
   );
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
-        onSearch?.(value);
+        search.setSearchQuery?.(search.searchQuery);
       }
     },
-    [onSearch, value]
+    [search.setSearchQuery, search.searchQuery]
   );
+
   return (
     <div className="searchbar">
       <input
-        value={value}
+        value={search.searchQuery}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        placeholder={placeholder}
+        placeholder="Search employees..."
         aria-label="Search employees"
       />
       <Button
-        onClick={() => onSearch?.(value)}
+        onClick={() => search.setSearchQuery?.(search.searchQuery)}
         children={"Search"}
         arialabel="Search"
       />

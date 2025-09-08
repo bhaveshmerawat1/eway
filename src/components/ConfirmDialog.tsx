@@ -35,7 +35,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         <Button 
         children={confirmText}
         onClick={onConfirm}
-        arialabel={confirmText}
+        arialabel={'confirmDelete'}
         variant="danger"
         />
       </div>

@@ -5,25 +5,18 @@ import Button from "./Button/Button";
 import { useEmployees } from "@/context/EmployeeContext";
 import { FaCaretDown, FaCaretUp } from "react-icons/fa";
 
-type Props = {
-  data: Employee[];
-  onEdit: (emp: Employee | null) => void;
-  onDelete: (emp: Employee) => void;
-  highlightId?: string | null;
-};
-
 const TableHeaderCell: React.FC<{ field?: keyof Employee; children: React.ReactNode }> = ({
   field,
   children,
 }) => {
-  const { setSort, sortField, sortOrder } = useEmployees();
+  const { shorting } = useEmployees();
 
-  const isActive = sortField === field;
+  const isActive = shorting.sort.field === field;
 
   return (
     <th
       className="th"
-      onClick={field ? () => setSort(field) : undefined}
+      onClick={field ? () => shorting.setSort(field) : undefined}
       style={{ cursor: field ? "pointer" : "default", whiteSpace: "nowrap" }}
     >
       <span className="flex items-center gap-1">
@@ -31,7 +24,7 @@ const TableHeaderCell: React.FC<{ field?: keyof Employee; children: React.ReactN
         {field && (
           <span className="inline-flex flex-col leading-none textSize">
             {isActive ? (
-              sortOrder === "asc" ? (
+              shorting.sort.order === "asc" ? (
                 <FaCaretUp className="arrowColor" />
               ) : (
                   <FaCaretDown className="arrowColor" />
@@ -47,40 +40,52 @@ const TableHeaderCell: React.FC<{ field?: keyof Employee; children: React.ReactN
   );
 };
 
-
-const EmployeeTable: React.FC<Props> = ({ onEdit, onDelete, highlightId }) => {
-  const { paginatedEmployees, currentPage, totalPages, setCurrentPage } = useEmployees();
+const EmployeeTable: React.FC = () => {
+  const { pageinfo,modalAction} = useEmployees();
 
   return (
     <div className="table-wrap">
       <table className="table">
         <thead>
           <tr>
-            <TableHeaderCell >#</TableHeaderCell>
-            <TableHeaderCell field="firstName">Name </TableHeaderCell>
+            <TableHeaderCell >Sr. No.</TableHeaderCell>
+            <TableHeaderCell field="firstName">Employee Name </TableHeaderCell>
             <TableHeaderCell field="age">Age</TableHeaderCell>
             <TableHeaderCell field="joiningDate">Joining Date</TableHeaderCell>
             <TableHeaderCell field="address">Address</TableHeaderCell>
-            <TableHeaderCell field="mobile">Mobile</TableHeaderCell>
+            <TableHeaderCell field="mobile">Mobile Number</TableHeaderCell>
             <TableHeaderCell>Action</TableHeaderCell>
           </tr>
         </thead>
         <tbody>
-          {paginatedEmployees?.length === 0 ? (
+          {pageinfo.paginatedEmployees?.length === 0 ? (
             <tr><td colSpan={7} className="empty">No employees found</td></tr>
           ) : (
-            paginatedEmployees?.map((e, idx) => (
-              <tr key={e.id} className={e.id === highlightId ? "row-highlight" : undefined}>
-                <td>{idx + 1 + (currentPage - 1) * 5}</td>
-                <td>{e.firstName} {e.lastName}</td>
-                <td>{e.age}</td>
-                <td>{new Date(e.joiningDate).toLocaleDateString()}</td>
-                <td>{e.address}</td>
-                <td>{e.mobile}</td>
+            pageinfo.paginatedEmployees?.map((item, idx) => (
+              <tr key={item.id}>
+                <td>{idx + 1 + (pageinfo.currentPage - 1) * 5}</td>
+                <td>{item.firstName} {item.lastName}</td>
+                <td>{item.age}</td>
+                <td>{new Date(item.joiningDate).toLocaleDateString()}</td>
+                <td>{item.address}</td>
+                <td>{item.mobile}</td>
                 <td>
                   <div className="action-group">
-                    <Button children="Edit" arialabel="editBtn" onClick={() => onEdit(e)} variant="secondary" className="actionEditBtn" />
-                    <Button children="Delete" arialabel="deleteBtn" onClick={() => onDelete(e)} variant="danger" />
+                    <Button
+                      children="Edit"
+                      arialabel="editBtn"
+                      type="button"
+                      onClick={() => modalAction.setEditing(item)}
+                      variant="secondary"
+                      className="actionEditBtn"
+                    />
+                    <Button
+                      children="Delete"
+                      type="button"
+                      arialabel="deleteBtn"
+                      onClick={() => modalAction.askDelete(item)}
+                      variant="danger"
+                    />
                   </div>
                 </td>
               </tr>
@@ -92,21 +97,24 @@ const EmployeeTable: React.FC<Props> = ({ onEdit, onDelete, highlightId }) => {
       {/* Pagination Controls */}
       <div className="pagination">
         <Button
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage((p) => p - 1)}
+          disabled={pageinfo.currentPage === 1}
+          onClick={() => pageinfo.setCurrentPage((page) => page - 1)}
           children={"<"}
           className="mr-3"
           variant="secondary"
+          type="button"
+          arialabel="prevBtn"
         />
 
-        <span>Page {currentPage} of {totalPages}</span>
+        <span>Page {pageinfo.currentPage} of {pageinfo.totalPages}</span>
         <Button
           children={">"}
           type="button"
           className="ml-3"
           variant="secondary"
-          disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage((p) => p + 1)}
+          disabled={pageinfo.currentPage === pageinfo.totalPages}
+          onClick={() => pageinfo.setCurrentPage((page) => page + 1)}
+          arialabel="nextBtn"
         />
       </div>
     </div>

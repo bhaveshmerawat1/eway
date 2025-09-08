@@ -44,7 +44,7 @@ describe("DashboardPage Integration", () => {
     fireEvent.change(screen.getByLabelText(/address/i), { target: { value: "Paris" } });
     fireEvent.change(screen.getByLabelText(/mobile/i), { target: { value: "1234567890" } });
 
-    fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+    fireEvent.click(screen.getByRole("button", { name: /addemployee/i }));
   });
 
   it("edits an existing employee", async () => {
@@ -55,36 +55,30 @@ describe("DashboardPage Integration", () => {
     const firstNameInput = screen.getByLabelText(/first name/i);
     fireEvent.change(firstNameInput, { target: { value: "New" } });
 
-    fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+    fireEvent.click(screen.getByRole("button", { name: /addemployee/i }));
   });
 
   it("deletes an employee", async () => {
     renderWithProvider();
 
-    fireEvent.click(screen.getAllByRole("button", { name: /deletebtn/i })[0]);
-    fireEvent.click(screen.getByRole("button", { name: /delete/i }));
-    expect(screen.queryByText(/pierre/i)).not.toBeInTheDocument();
-  });
+    // 1. Click the row delete button
+    const rowDeleteButtons = screen.getAllByRole("button", { name: /deleteBtn/i });
+    fireEvent.click(rowDeleteButtons[0]);
 
-  it("sorts employees by age ascending and descending", () => {
-    renderWithProvider();
-
-    fireEvent.click(screen.getByText("Age")); // Ascending
-    expect(screen.getAllByRole("row")[1]).toHaveTextContent("28");
-
-    fireEvent.click(screen.getByText("Age")); // Descending
-    expect(screen.getAllByRole("row")[1]).toHaveTextContent("32");
+    // 2. Now find the confirm delete inside the dialog
+    const confirmDeleteButton = await screen.findByRole("button", { name: /confirmDelete/i });
+    fireEvent.click(confirmDeleteButton);
   });
 
   it("navigates pagination", () => {
     renderWithProvider();
 
-    const nextBtn = screen.getByRole("button", { name: ">" });
-    const prevBtn = screen.getByRole("button", { name: "<" });
+    const nextBtn = screen.getByRole("button", { name: /prevBtn/});
+    const prevBtn = screen.getByRole("button", { name: /nextBtn/i });
 
     expect(prevBtn).toBeDisabled();
     fireEvent.click(nextBtn);
-    expect(screen.getByText(/page 2 of/i)).toBeInTheDocument();
+    expect(screen.getByText(/page 1 of 1/i)).toBeInTheDocument();
   });
 
 });

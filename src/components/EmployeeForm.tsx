@@ -2,15 +2,9 @@
 import React, { useState } from "react";
 import { Employee, NewEmployee } from "@/utils/EmployeeTypes";
 import { validateEmployee } from "@/utils/validators";
-import "@/assets/styles/common.css"
+import "@/assets/styles/common.css";
 import Button from "./Button/Button";
 import { useEmployees } from "@/context/EmployeeContext";
-
-type Props = {
-  initial?: Partial<Employee>;  
-  onSubmit: (data: NewEmployee | Employee) => void;
-  mode?: "create" | "edit";
-};
 
 const empty: NewEmployee = {
   firstName: "",
@@ -21,7 +15,12 @@ const empty: NewEmployee = {
   mobile: "",
 };
 
-const Field: React.FC<{ label: string; error?: string; htmlFor?: string; children: React.ReactNode }> = ({ label, error, children, htmlFor }) => (
+const Field: React.FC<{
+  label: string;
+  error?: string;
+  htmlFor?: string;
+  children: React.ReactNode;
+}> = ({ label, error, children, htmlFor }) => (
   <div className="field">
     <label htmlFor={htmlFor}>{label}</label>
     {children}
@@ -29,77 +28,117 @@ const Field: React.FC<{ label: string; error?: string; htmlFor?: string; childre
   </div>
 );
 
-const EmployeeForm: React.FC<Props> = ({ initial, onSubmit, mode = "create" }) => {
-  const { employees } = useEmployees(); // get existing employees
-  const [form, setForm] = useState<NewEmployee | Employee>({ ...empty, ...initial });
-  const [errors, setErrors] = useState<Partial<Record<keyof NewEmployee, string>>>({});
+const EmployeeForm: React.FC = () => {
+  const { allEmployees,modalAction } = useEmployees();
 
-  const update = <K extends keyof (NewEmployee | Employee)>(key: K, val: any) =>
-    setForm(prev => ({ ...prev, [key]: val }));
+  const mode = modalAction.editing ? "edit" : "create";
+  const [formInputVal, setFormInputVal] = useState<NewEmployee | Employee>({
+    ...empty,
+    ...modalAction.editing,
+  });
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof NewEmployee, string>>
+  >({});
 
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const v = validateEmployee(
-      form as NewEmployee,
-      employees,
+  const update = <K extends keyof (NewEmployee | Employee)>(
+    key: K,
+    val: any
+  ) => setFormInputVal((prev) => ({ ...prev, [key]: val }));
+
+  const submit = (item: React.FormEvent) => {
+    item.preventDefault();
+    const validation = validateEmployee(
+      formInputVal as NewEmployee,
+      allEmployees.employees,
       mode === "edit"
-    ); 
-    setErrors(v);
-    if (Object.keys(v).length) return;
-    onSubmit(form);
+    );
+    setErrors(validation);
+    if (Object.keys(validation).length) return;
+
+    if (mode === "edit") {
+      allEmployees.updateEmployeeDetails(formInputVal as Employee);
+    } else {
+      allEmployees.createNewEmployee(formInputVal as NewEmployee);
+    }
   };
 
   return (
     <form onSubmit={submit}>
       <div className="grid2">
         <Field label="First Name" htmlFor="firstName" error={errors.firstName}>
-          <input name="firstName" id="firstName" value={form.firstName} onChange={(e) => update("firstName", e.target.value)}
-            maxLength={20} />
+          <input
+            name="firstName"
+            id="firstName"
+            value={formInputVal.firstName}
+            onChange={(val) => update("firstName", val.target.value)}
+            maxLength={20}
+          />
         </Field>
         <Field label="Last Name" htmlFor="lastName" error={errors.lastName}>
-          <input value={form.lastName} id="lastName" name="lastName" onChange={(e) => update("lastName", e.target.value)}
-            maxLength={20} />
+          <input
+            value={formInputVal.lastName}
+            id="lastName"
+            name="lastName"
+            onChange={(val) => update("lastName", val.target.value)}
+            maxLength={20}
+          />
         </Field>
       </div>
 
       <div className="grid2">
         <Field label="Age" htmlFor="age" error={errors.age}>
-          <input type="number"
-            id={"age"}
+          <input
+            type="number"
+            id="age"
             name="age"
             min={16}
             max={80}
-            maxLength={3}
-            value={form.age}
-            onChange={(e) => update("age", Number(e.target.value))}
+            value={formInputVal.age}
+            onChange={(val) => update("age", Number(val.target.value))}
           />
         </Field>
-        <Field label="Joining Date" htmlFor="joiningDate" error={errors.joiningDate}>
-          <input type="date" id="joiningDate" name="joiningDate" value={form.joiningDate} onChange={(e) => update("joiningDate", e.target.value)} />
+        <Field
+          label="Joining Date"
+          htmlFor="joiningDate"
+          error={errors.joiningDate}
+        >
+          <input
+            type="date"
+            id="joiningDate"
+            name="joiningDate"
+            value={formInputVal.joiningDate}
+            onChange={(val) => update("joiningDate", val.target.value)}
+          />
         </Field>
       </div>
 
       <Field label="Mobile" htmlFor="mobileNumber" error={errors.mobile}>
         <input
           placeholder="0000 0000 00"
-          value={form.mobile}
+          value={formInputVal.mobile}
           id="mobileNumber"
           name="mobileNumber"
-          onChange={(e) => update("mobile", e.target.value)}
+          onChange={(val) => update("mobile", val.target.value)}
           type="number"
-          maxLength={10} />
+        />
       </Field>
 
       <Field label="Address" htmlFor="address" error={errors.address}>
-        <textarea value={form.address} id="address" name="address" onChange={(e) => update("address", e.target.value)} maxLength={200} />
+        <textarea
+          value={formInputVal.address}
+          id="address"
+          name="address"
+          onChange={(val) => update("address", val.target.value)}
+          maxLength={200}
+        />
       </Field>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 6 }}>
+      <div className="actions">
         <Button
           children={mode === "edit" ? "Update" : "Add Employee"}
           type="submit"
           variant="primary"
-          arialabel={"addemployee"}
+          arialabel={mode === "edit" ? "updateEmployee" : "addEmployee"}
         />
       </div>
     </form>

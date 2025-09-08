@@ -8,32 +8,36 @@ import { Employee, NewEmployee } from "@/utils/EmployeeTypes";
 import { validateEmployee } from "@/utils/validators";
 
 interface EmployeeContextValue {
-  employees: Employee[];
-  filtered: Employee[];
-  query: string;
-  setQuery: (val: string) => void;
-  highlight: string | null;
-
-  addModal: ReturnType<typeof useToggle>;
-  editing: Employee | null;
-  setEditing: (emp: Employee | null) => void;
-
-  confirm: ReturnType<typeof useToggle>;
-  toDelete: Employee | null;
-  askDelete: (emp: Employee) => void;
-  confirmDelete: () => void;
-
-  createEmployee: (data: NewEmployee) => void;
-  updateEmployee: (data: Employee) => void;
-  // Shorting
-  sortField: keyof Employee | null;
-  sortOrder: "asc" | "desc";
-  setSort: (field: keyof Employee) => void;
-  currentPage: number;
-  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
-  itemsPerPage: number;
-  totalPages: number;
-  paginatedEmployees: Employee[];
+  allEmployees: {
+    employees: Employee[];
+    createNewEmployee: (data: NewEmployee) => void;
+    updateEmployeeDetails: (data: Employee) => void;
+    filtered: Employee[];
+  },
+  search: {
+    searchQuery: string;
+    setSearchQuery: (val: string) => void;
+  },
+  pageinfo: {
+    currentPage: number;
+    setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+    itemsPerPage: number;
+    totalPages: number;
+    paginatedEmployees: Employee[];
+  },
+  shorting: {
+    sort: { field: keyof Employee; order: "asc" | "desc" };
+    setSort: (field: keyof Employee) => void;
+  },
+  modalAction: {
+    addModal: ReturnType<typeof useToggle>;
+    editing: Employee | null;
+    setEditing: (emp: Employee | null) => void;
+    confirm: ReturnType<typeof useToggle>;
+    toDelete: Employee | null;
+    askDelete: (emp: Employee) => void;
+    confirmDelete: () => void;
+  }
 }
 
 const EmployeeContext = createContext<EmployeeContextValue | null>(null);
@@ -51,83 +55,92 @@ const seed: Employee[] = [
 ];
 
 export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [employees, setEmployees, ready] = useLocalStorage<Employee[]>(STORAGE_KEYS.EMPLOYEES, seed);
-  const [query, setQuery] = useState("");
+  const { getLocalStorage, setLocalStorage, deleteLocalStorage, localStorageIsReady } =
+    useLocalStorage<Employee[]>(STORAGE_KEYS.EMPLOYEES, seed);
+  const [employees, setEmployees] = useState<Employee[]>(() => getLocalStorage(STORAGE_KEYS.EMPLOYEES) || seed);
+  const [searchQuery, setSearchQuery] = useState("");
   const [editing, setEditing] = useState<Employee | null>(null);
   const addModal = useToggle(false);
   const confirm = useToggle(false);
   const [toDelete, setToDelete] = useState<Employee | null>(null);
-  const [highlight, setHighlight] = useState<string | null>(null);
-
-  const [sortField, setSortField] = useState<keyof Employee | null>(null);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sort, setSortState] = useState<{ field: keyof Employee; order: "asc" | "desc" }>({
+    field: "firstName",
+    order: "asc",
+  });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // Filter
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return employees;
-    return employees.filter(e =>
-      [e.firstName, e.lastName, e.address, e.mobile].some(v => v.toLowerCase().includes(q)) ||
-      String(e.age).includes(q)
-    );
-  }, [employees, query]);
+
+  React.useEffect(() => {
+    if (localStorageIsReady) {
+      setLocalStorage(STORAGE_KEYS.EMPLOYEES, employees);
+    }
+  }, [employees, localStorageIsReady, setLocalStorage]);
 
   // Create
-  function createEmployee(data: NewEmployee) {
+  function createNewEmployee(data: NewEmployee) {
     const errs = validateEmployee(data);
     if (Object.keys(errs).length) return;
 
     const id = crypto.randomUUID();
     const newEmp: Employee = { id, ...data };
     setEmployees(prev => [newEmp, ...prev]);
-    addModal.setFalse();
-    setHighlight(id);
-    setTimeout(() => setHighlight(null), 2000);
+    addModal.close();
   }
 
   // Update
-  function updateEmployee(data: Employee) {
+  function updateEmployeeDetails(data: Employee) {
     setEmployees(prev => prev.map(e => e.id === data.id ? data : e));
     setEditing(null);
-    setHighlight(data.id);
-    setTimeout(() => setHighlight(null), 2000);
   }
 
   // Delete
   function askDelete(emp: Employee) {
     setToDelete(emp);
-    confirm.setTrue();
+    confirm.open();
   }
 
   function confirmDelete() {
     if (!toDelete) return;
     setEmployees(prev => prev.filter(e => e.id !== toDelete.id));
-    confirm.setFalse();
+    confirm.close();
     setToDelete(null);
+    // If no employees left, clear from storage
+    if (employees.length === 1) {
+      deleteLocalStorage(STORAGE_KEYS.EMPLOYEES);
+    }
   }
-  
+
+  // Filter
+  const filtered = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return employees;
+    return employees.filter(emp =>
+      [emp.firstName, emp.lastName, emp.address, emp.mobile].some(value => value.toLowerCase().includes(q)) ||
+      String(emp.age).includes(q)
+    );
+  }, [employees, searchQuery]);
+
   // Sorting logic
   const setSort = (field: keyof Employee) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortOrder("asc");
-    }
+    setSortState(prev =>
+      prev.field === field
+        ? { ...prev, order: prev.order === "asc" ? "desc" : "asc" }
+        : { field, order: "asc" }
+    );
   };
 
   const sortedEmployees = React.useMemo(() => {
-    if (!sortField) return filtered;
+    if (!sort.field) return filtered;
+    const { field, order } = sort;
     return [...filtered].sort((a, b) => {
-      const aValue = a[sortField];
-      const bValue = b[sortField];
-      if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+      const aValue = a[field];
+      const bValue = b[field];
+      if (aValue < bValue) return order === "asc" ? -1 : 1;
+      if (aValue > bValue) return order === "asc" ? 1 : -1;
       return 0;
     });
-  }, [filtered, sortField, sortOrder]);
+  }, [filtered, sort]);
 
   // Pagination
   const totalPages = Math.ceil(sortedEmployees.length / itemsPerPage);
@@ -136,24 +149,41 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     currentPage * itemsPerPage
   );
 
-  if (!ready) return null;
+  if (!localStorageIsReady) return null;
 
   return (
     <EmployeeContext.Provider value={{
-      employees, filtered, query, setQuery,
-      addModal, editing, setEditing,
-      confirm, toDelete, askDelete, confirmDelete,
-      createEmployee, updateEmployee, highlight, sortField,
-      sortOrder,
-      setSort,
-      currentPage,
-      setCurrentPage,
-      itemsPerPage,
-      totalPages,
-      paginatedEmployees,
-    }}>
-      {children}
-    </EmployeeContext.Provider>
+      allEmployees: {
+        employees,
+        createNewEmployee,
+        updateEmployeeDetails,
+        filtered
+      },
+      search: {
+        searchQuery,
+        setSearchQuery,
+      },
+      pageinfo: {
+        currentPage,
+        setCurrentPage,
+        itemsPerPage,
+        totalPages,
+        paginatedEmployees,
+      },
+      shorting: {
+        sort,
+        setSort
+      },
+      modalAction: {
+        addModal,
+        editing,
+        setEditing,
+        confirm,
+        toDelete,
+        askDelete,
+        confirmDelete,
+      }
+    }} > {children}</EmployeeContext.Provider>
   );
 };
 

@@ -2,25 +2,16 @@
 
 import React from "react";
 import "@/assets/styles/common.css";
-
 import { useEmployees } from "@/context/EmployeeContext";
-
 import SearchBar from "@/components/SearchBar";
 import EmployeeTable from "@/components/EmployeeTable";
 import Modal from "@/components/Modal";
 import EmployeeForm from "@/components/EmployeeForm";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Button from "@/components/Button/Button";
-import { Employee } from "@/utils/EmployeeTypes";
 
 function DashboardPage() {
-  const {
-    query, setQuery, filtered,
-    addModal, editing, setEditing,
-    createEmployee, updateEmployee,
-    confirm, toDelete, askDelete,
-    confirmDelete, highlight
-  } = useEmployees();
+  const {modalAction} = useEmployees();
 
   return (
     <div className="page">
@@ -35,49 +26,39 @@ function DashboardPage() {
           <h2 className="section-title">Employee List</h2>
           <Button
             children={"+ Add New Employee"}
-            onClick={addModal.setTrue}
+            onClick={modalAction.addModal.open}
             type="button"
             variant="primary"
             arialabel="add new employee"
           />
         </div>
         {/* Search bar */}
-        <SearchBar value={query} onChange={setQuery} />
-        
+        <SearchBar />
         <div style={{ height: 14 }} />
 
         {/* Employee table */}
-        <EmployeeTable
-          data={filtered}
-          onEdit={setEditing}
-          onDelete={askDelete}
-          highlightId={highlight}
-        />
+        <EmployeeTable />
       </div>
 
       {/* Add */}
-      <Modal open={addModal.open} onClose={addModal.setFalse} title="Add Employee">
-        <EmployeeForm mode="create" onSubmit={createEmployee} />
+      <Modal open={modalAction.addModal.isOpen} onClose={modalAction.addModal.close} title="Add Employee">
+        <EmployeeForm />
       </Modal>
 
       {/* Edit */}
-      <Modal open={!!editing} onClose={() => setEditing(null)} title="Edit Employee">
-        {editing && (
-          <EmployeeForm
-            mode="edit"
-            initial={editing}
-            onSubmit={(d) => updateEmployee(d as Employee)}
-          />
+      <Modal open={!!modalAction.editing} onClose={()=>modalAction.setEditing(null)} title="Edit Employee">
+        {modalAction.editing && (
+          <EmployeeForm />
         )}
       </Modal>
 
       {/* Confirm Delete */}
       <ConfirmDialog
-        open={confirm.open}
+        open={modalAction.confirm.isOpen}
         title="Delete Employee"
-        message={`Are you sure you want to delete "${toDelete?.firstName} ${toDelete?.lastName}"?`}
-        onCancel={() => { confirm.setFalse(); setEditing(null); }}
-        onConfirm={confirmDelete}
+        message={`Are you sure you want to delete "${modalAction.toDelete?.firstName} ${modalAction.toDelete?.lastName}"?`}
+        onCancel={() => { modalAction.confirm.close(); modalAction.setEditing(null); }}
+        onConfirm={modalAction.confirmDelete}
         confirmText="Delete"
       />
     </div>
