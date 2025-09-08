@@ -56,7 +56,7 @@ function DashboardPage() {
       <ConfirmDialog
         open={modalAction.confirmEmployeeDeleteAction.isOpen}
         title="Delete Employee"
-        message={`Are you sure you want to delete "${modalAction.toDelete?.firstName} ${modalAction.toDelete?.lastName}"?`}
+        message={`Are you sure you want to delete "${modalAction.toDeleteRef.current?.firstName} ${modalAction.toDeleteRef.current?.lastName}"?`}
         onCancel={() => { modalAction.confirmEmployeeDeleteAction.close(); modalAction.setEditing(null); }}
         onConfirm={modalAction.confirmDelete}
         confirmText="Delete"

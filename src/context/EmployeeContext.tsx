@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useContext, useMemo, useState, useRef, MutableRefObject } from "react";
 import { STORAGE_KEYS } from "@/utils/storage";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import useToggle from "@/hooks/useToggle";
@@ -34,7 +34,7 @@ interface EmployeeContextValue {
     editing: Employee | null;
     setEditing: (emp: Employee | null) => void;
     confirmEmployeeDeleteAction: ReturnType<typeof useToggle>;
-    toDelete: Employee | null;
+    toDeleteRef: MutableRefObject<Employee | null>;
     askToEmpDelete: (emp: Employee) => void;
     confirmDelete: () => void;
   }
@@ -62,7 +62,7 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [editing, setEditing] = useState<Employee | null>(null);
   const employeeFormModal = useToggle(false);
   const confirmEmployeeDeleteAction = useToggle(false);
-  const [toDelete, setToDelete] = useState<Employee | null>(null);
+  const toDeleteRef = useRef<Employee | null>(null);
   const [sort, setSortState] = useState<{ field: keyof Employee; order: "asc" | "desc" }>({
     field: "firstName",
     order: "asc",
@@ -96,20 +96,22 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Delete
   function askToEmpDelete(emp: Employee) {
-    setToDelete(emp);
+    toDeleteRef.current = emp;
     confirmEmployeeDeleteAction.open();
   }
 
   function confirmDelete() {
-    if (!toDelete) return;
-    setEmployees(prev => prev.filter(e => e.id !== toDelete.id));
+    const mobileToDelete = toDeleteRef.current?.mobile;
+    if (!mobileToDelete) return;
+    setEmployees(prev => prev.filter(e => e.mobile !== mobileToDelete));
     confirmEmployeeDeleteAction.close();
-    setToDelete(null);
+    toDeleteRef.current = null;
     // If no employees left, clear from storage
-    if (employees.length === 1) {
+    if (employees.length === 0) {
       deleteLocalStorage(STORAGE_KEYS.EMPLOYEES);
     }
   }
+
 
   // Filter
   const filtered = useMemo(() => {
@@ -180,9 +182,9 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         editing,
         setEditing,
         confirmEmployeeDeleteAction,
-        toDelete,
         askToEmpDelete,
         confirmDelete,
+        toDeleteRef
       }
     }} > {children}</EmployeeContext.Provider>
   );
