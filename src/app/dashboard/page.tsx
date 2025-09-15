@@ -9,6 +9,7 @@ import Modal from "@/components/Modal";
 import EmployeeForm from "@/components/EmployeeForm";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Button from "@/components/Button/Button";
+import Loader from "@/components/Loader/Loader";
 
 function DashboardPage() {
   const {modalAction} = useEmployees();
@@ -61,6 +62,7 @@ function DashboardPage() {
         onConfirm={modalAction.confirmDelete}
         confirmText="Delete"
       />
+      <Loader isLoading={modalAction.isLoading} loaderFullScreen={true} size="lg" />
     </div>
   );
 }

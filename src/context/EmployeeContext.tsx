@@ -1,18 +1,25 @@
 "use client";
 
-import React, { createContext, useContext, useMemo, useState, useRef, MutableRefObject } from "react";
-import { STORAGE_KEYS } from "@/utils/storage";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import React, { createContext, useContext, useMemo, useState, useRef, MutableRefObject, useEffect } from "react";
 import useToggle from "@/hooks/useToggle";
-import { Employee, NewEmployee } from "@/utils/EmployeeTypes";
 import { validateEmployee } from "@/utils/validators";
+import { Employee } from "@/utils/EmployeeTypes";
+
+export interface NewEmployee {
+  firstName: string;
+  lastName: string;
+  age: number;
+  address: string;
+  mobile: string;
+}
 
 interface EmployeeContextValue {
   allEmployees: {
     employees: Employee[];
-    createNewEmployee: (data: NewEmployee) => void;
-    updateEmployeeDetails: (data: Employee) => void;
+    createNewEmployee: (data: NewEmployee) => Promise<void>;
+    updateEmployeeDetails: (data: Employee) => Promise<void>;
     filtered: Employee[];
+    fetchEmployees: () => Promise<void>;
   },
   search: {
     searchQuery: string;
@@ -36,28 +43,16 @@ interface EmployeeContextValue {
     confirmEmployeeDeleteAction: ReturnType<typeof useToggle>;
     toDeleteRef: MutableRefObject<Employee | null>;
     askToEmpDelete: (emp: Employee) => void;
-    confirmDelete: () => void;
+    confirmDelete: () => Promise<void>;
+    isLoading:boolean
+    setIsLoading:(val:boolean)=>void
   }
 }
 
 const EmployeeContext = createContext<EmployeeContextValue | null>(null);
 
-// seed data
-const seed: Employee[] = [
-  {
-    id: "e1", firstName: "Pierre", lastName: "Fontaine", age: 32, joiningDate: "2023-01-10",
-    address: "New York, USA", mobile: "5550101010"
-  },
-  {
-    id: "e2", firstName: "Rajesh", lastName: "Royal", age: 28, joiningDate: "2022-06-20",
-    address: "Ajmer, IN", mobile: "9876543210"
-  },
-];
-
 export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { getLocalStorage, setLocalStorage, deleteLocalStorage, localStorageIsReady } =
-    useLocalStorage<Employee[]>(STORAGE_KEYS.EMPLOYEES, seed);
-  const [employees, setEmployees] = useState<Employee[]>(() => getLocalStorage(STORAGE_KEYS.EMPLOYEES) || seed);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [editing, setEditing] = useState<Employee | null>(null);
   const employeeFormModal = useToggle(false);
@@ -69,61 +64,105 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const [isLoading, setIsLoading] = useState(false);
 
+  // 🔹 Fetch employees from API
+  async function fetchEmployees() {
+    const res = await fetch("api/employees");
+    const data = await res.json();
+    setEmployees(data);
+  }
 
-  React.useEffect(() => {
-    if (localStorageIsReady) {
-      setLocalStorage(STORAGE_KEYS.EMPLOYEES, employees);
-    }
-  }, [employees, localStorageIsReady, setLocalStorage]);
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
 
-  // Create
-  function createNewEmployee(data: NewEmployee) {
+  // 🔹 Create
+  async function createNewEmployee(data: NewEmployee) {
+    setIsLoading(true)
     const errs = validateEmployee(data);
     if (Object.keys(errs).length) return;
-
-    const id = crypto.randomUUID();
-    const newEmp: Employee = { id, ...data };
-    setEmployees(prev => [newEmp, ...prev]);
+    const res = await fetch("api/employees", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    console.log("create new employee api call ===================",data)
+    if (res.ok) {
+      const newEmp = await res.json();
+      console.log("fetch latest emp ===================", newEmp)
+      setEmployees(prev => [newEmp, ...prev]);
+      setIsLoading(false)
+    }
     employeeFormModal.close();
+    setIsLoading(false)
   }
 
-  // Update
-  function updateEmployeeDetails(data: Employee) {
-    setEmployees(prev => prev.map(e => e.id === data.id ? data : e));
-    setEditing(null);
+  // 🔹 Update
+  async function updateEmployeeDetails(data: Employee) {
+    setIsLoading(true)
+    const id = data.id
+    try {
+      const res = await fetch(`/api/employees/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      console.log("update employee ===============",data)
+      if (!res.ok) throw new Error("Failed to update employee");
+      const updated = await res.json();
+      // update state so UI reflects changes
+      setEmployees((prev) =>
+        prev.map((emp) => (emp.id === updated.id ? updated : emp))
+      );
+      setEditing(null);
+      setIsLoading(false)
+    } catch (error) {
+      console.error("❌ Error updating employee:", error);
+      setIsLoading(false)
+    }
   }
 
-  // Delete
+  // 🔹 Delete
   function askToEmpDelete(emp: Employee) {
     toDeleteRef.current = emp;
     confirmEmployeeDeleteAction.open();
   }
 
-  function confirmDelete() {
-    const mobileToDelete = toDeleteRef.current?.mobile;
-    if (!mobileToDelete) return;
-    setEmployees(prev => prev.filter(e => e.mobile !== mobileToDelete));
-    confirmEmployeeDeleteAction.close();
-    toDeleteRef.current = null;
-    // If no employees left, clear from storage
-    if (employees.length === 0) {
-      deleteLocalStorage(STORAGE_KEYS.EMPLOYEES);
+  async function confirmDelete() {
+    setIsLoading(true)
+    const idToDelete = toDeleteRef?.current?.id
+    if (!idToDelete) return;
+    try {
+      const res = await fetch(`/api/employees/${idToDelete}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Failed to delete employee");
+
+      // Update state after successful delete
+      setEmployees((prev) => prev.filter((e) => e.id !== idToDelete));
+      confirmEmployeeDeleteAction.close();
+      toDeleteRef.current = null;
+      setIsLoading(false)
+    } catch (error) {
+      console.error("❌ Error deleting employee:", error);
+      setIsLoading(false)
     }
   }
 
-
-  // Filter
+  // 🔹 Filter
   const filtered = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return employees;
     return employees.filter(emp =>
-      [emp.firstName, emp.lastName, emp.address, emp.mobile].some(value => value.toLowerCase().includes(q)) ||
-      String(emp.age).includes(q)
+      [emp.firstName, emp.lastName, emp.address, emp.mobile].some(value =>
+        value.toLowerCase().includes(q)
+      ) || String(emp.age).includes(q)
     );
   }, [employees, searchQuery]);
 
-  // Sorting logic
+  // 🔹 Sorting
   const setSort = (field: keyof Employee) => {
     setSortState(prev =>
       prev.field === field
@@ -132,7 +171,7 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     );
   };
 
-  const sortedEmployees = React.useMemo(() => {
+  const sortedEmployees = useMemo(() => {
     if (!sort.field) return filtered;
     const { field, order } = sort;
     return [...filtered].sort((a, b) => {
@@ -144,49 +183,23 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     });
   }, [filtered, sort]);
 
-  // Pagination
+  // 🔹 Pagination
   const totalPages = Math.ceil(sortedEmployees.length / itemsPerPage);
   const paginatedEmployees = sortedEmployees.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  // Check initial localstorage is ready or not
-  if (!localStorageIsReady) return null;
-
   return (
     <EmployeeContext.Provider value={{
-      allEmployees: {
-        employees,
-        createNewEmployee,
-        updateEmployeeDetails,
-        filtered
-      },
-      search: {
-        searchQuery,
-        setSearchQuery,
-      },
-      pageinfo: {
-        currentPage,
-        setCurrentPage,
-        itemsPerPage,
-        totalPages,
-        paginatedEmployees,
-      },
-      shorting: {
-        sort,
-        setSort
-      },
-      modalAction: {
-        employeeFormModal,
-        editing,
-        setEditing,
-        confirmEmployeeDeleteAction,
-        askToEmpDelete,
-        confirmDelete,
-        toDeleteRef
-      }
-    }} > {children}</EmployeeContext.Provider>
+      allEmployees: { employees, createNewEmployee, updateEmployeeDetails, filtered, fetchEmployees },
+      search: { searchQuery, setSearchQuery },
+      pageinfo: { currentPage, setCurrentPage, itemsPerPage, totalPages, paginatedEmployees },
+      shorting: { sort, setSort },
+      modalAction: { employeeFormModal, editing, setEditing, confirmEmployeeDeleteAction, askToEmpDelete, confirmDelete, toDeleteRef,isLoading,setIsLoading}
+    }}>
+      {children} 
+    </EmployeeContext.Provider>
   );
 };
 

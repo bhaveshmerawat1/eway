@@ -46,6 +46,7 @@ const EmployeeForm: React.FC = () => {
   ) => setFormInputVal((prev) => ({ ...prev, [key]: val }));
 
   const submit = (item: React.FormEvent) => {
+    modalAction.setIsLoading(true)
     item.preventDefault();
     const validation = validateEmployee(
       formInputVal as NewEmployee,
@@ -53,8 +54,8 @@ const EmployeeForm: React.FC = () => {
       mode === "edit"
     );
     setErrors(validation);
+    modalAction.setIsLoading(false)
     if (Object.keys(validation).length) return;
-
     if (mode === "edit") {
       allEmployees.updateEmployeeDetails(formInputVal as Employee);
     } else {
@@ -63,85 +64,87 @@ const EmployeeForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={submit}>
-      <div className="grid2">
-        <Field label="First Name" htmlFor="firstName" error={errors.firstName}>
-          <input
-            name="firstName"
-            id="firstName"
-            value={formInputVal.firstName}
-            onChange={(val) => update("firstName", val.target.value)}
-            maxLength={20}
-          />
-        </Field>
-        <Field label="Last Name" htmlFor="lastName" error={errors.lastName}>
-          <input
-            value={formInputVal.lastName}
-            id="lastName"
-            name="lastName"
-            onChange={(val) => update("lastName", val.target.value)}
-            maxLength={20}
-          />
-        </Field>
-      </div>
+    <>
+      <form onSubmit={submit}>
+        <div className="grid2">
+          <Field label="First Name" htmlFor="firstName" error={errors.firstName}>
+            <input
+              name="firstName"
+              id="firstName"
+              value={formInputVal.firstName}
+              onChange={(val) => update("firstName", val.target.value)}
+              maxLength={20}
+            />
+          </Field>
+          <Field label="Last Name" htmlFor="lastName" error={errors.lastName}>
+            <input
+              value={formInputVal.lastName}
+              id="lastName"
+              name="lastName"
+              onChange={(val) => update("lastName", val.target.value)}
+              maxLength={20}
+            />
+          </Field>
+        </div>
 
-      <div className="grid2">
-        <Field label="Age" htmlFor="age" error={errors.age}>
+        <div className="grid2">
+          <Field label="Age" htmlFor="age" error={errors.age}>
+            <input
+              type="number"
+              id="age"
+              name="age"
+              min={16}
+              max={80}
+              value={formInputVal.age}
+              onChange={(val) => update("age", Number(val.target.value))}
+            />
+          </Field>
+          <Field
+            label="Joining Date"
+            htmlFor="joiningDate"
+            error={errors.joiningDate}
+          >
+            <input
+              type="date"
+              id="joiningDate"
+              name="joiningDate"
+              value={formInputVal.joiningDate}
+              onChange={(val) => update("joiningDate", val.target.value)}
+            />
+          </Field>
+        </div>
+
+        <Field label="Mobile" htmlFor="mobileNumber" error={errors.mobile}>
           <input
+            placeholder="0000 0000 00"
+            value={formInputVal.mobile}
+            id="mobileNumber"
+            name="mobileNumber"
+            onChange={(val) => update("mobile", val.target.value)}
             type="number"
-            id="age"
-            name="age"
-            min={16}
-            max={80}
-            value={formInputVal.age}
-            onChange={(val) => update("age", Number(val.target.value))}
           />
         </Field>
-        <Field
-          label="Joining Date"
-          htmlFor="joiningDate"
-          error={errors.joiningDate}
-        >
-          <input
-            type="date"
-            id="joiningDate"
-            name="joiningDate"
-            value={formInputVal.joiningDate}
-            onChange={(val) => update("joiningDate", val.target.value)}
+
+        <Field label="Address" htmlFor="address" error={errors.address}>
+          <textarea
+            value={formInputVal.address}
+            id="address"
+            name="address"
+            onChange={(val) => update("address", val.target.value)}
+            maxLength={200}
           />
         </Field>
-      </div>
 
-      <Field label="Mobile" htmlFor="mobileNumber" error={errors.mobile}>
-        <input
-          placeholder="0000 0000 00"
-          value={formInputVal.mobile}
-          id="mobileNumber"
-          name="mobileNumber"
-          onChange={(val) => update("mobile", val.target.value)}
-          type="number"
-        />
-      </Field>
-
-      <Field label="Address" htmlFor="address" error={errors.address}>
-        <textarea
-          value={formInputVal.address}
-          id="address"
-          name="address"
-          onChange={(val) => update("address", val.target.value)}
-          maxLength={200}
-        />
-      </Field>
-
-      <div className="actions">
-        <Button
-          children={mode === "edit" ? "Update" : "Add Employee"}
-          type="submit"
-          variant="primary"
-          arialabel={mode === "edit" ? "updateEmployee" : "addEmployee"}
-        />
-      </div>
-    </form>
+        <div className="actions">
+          <Button
+            children={mode === "edit" ? "Update" : "Add Employee"}
+            type="submit"
+            variant="primary"
+            arialabel={mode === "edit" ? "updateEmployee" : "addEmployee"}
+          />
+        </div>
+      </form>
+    </>
   );
 };
 
