@@ -3,7 +3,8 @@
 import React, { createContext, useContext, useMemo, useState, useRef, MutableRefObject, useEffect } from "react";
 import useToggle from "@/hooks/useToggle";
 import { validateEmployee } from "@/utils/validators";
-import { Employee } from "@/utils/EmployeeTypes";
+import { ApiResponse, Employee } from "@/utils/EmployeeTypes";
+import axios from "axios";
 
 export interface NewEmployee {
   firstName: string;
@@ -16,7 +17,7 @@ export interface NewEmployee {
 interface EmployeeContextValue {
   allEmployees: {
     employees: Employee[];
-    createNewEmployee: (data: NewEmployee) => Promise<void>;
+    createNewEmployee: (data: Omit<Employee, "id">) => Promise<void>;
     updateEmployeeDetails: (data: Employee) => Promise<void>;
     filtered: Employee[];
     fetchEmployees: () => Promise<void>;
@@ -66,11 +67,15 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const itemsPerPage = 5;
   const [isLoading, setIsLoading] = useState(false);
 
+
   // 🔹 Fetch employees from API
   async function fetchEmployees() {
-    const res = await fetch("api/employees");
-    const data = await res.json();
-    setEmployees(data);
+    const res = await axios.get<ApiResponse<Employee[]>>("/api/employees");
+    if (res.data.success && res.data.data) {
+      setEmployees(res.data.data);
+    } else {
+      console.error("Failed to fetch employees:", res.data.error);
+    }
   }
 
   useEffect(() => {

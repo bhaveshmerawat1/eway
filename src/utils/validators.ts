@@ -33,3 +33,36 @@ export function validateEmployee(
 
   return errors;
 }
+
+// Api validation
+export function apiValidateEmployee(data: any, isUpdate = false) {
+  const errors: string[] = [];
+
+  if (!isUpdate && !data.firstName) {
+    errors.push("First name is required");
+  } else if (data.firstName && data.firstName.length < 2) {
+    errors.push("First name must be at least 2 characters");
+  }
+
+  if (!isUpdate && !data.lastName) {
+    errors.push("Last name is required");
+  }
+
+  if (typeof data.age !== "number" || data.age < 18 || data.age > 65) {
+    errors.push("Age must be a number between 18 and 65");
+  }
+
+  if (!data.joiningDate || isNaN(Date.parse(data.joiningDate))) {
+    errors.push("Joining date must be a valid date");
+  }
+
+  if (!data.address || data.address.length < 5) {
+    errors.push("Address must be at least 5 characters");
+  }
+
+  if (!data.mobile || !/^\d{10}$/.test(data.mobile)) {
+    errors.push("Mobile number must be exactly 10 digits");
+  }
+
+  return errors;
+}

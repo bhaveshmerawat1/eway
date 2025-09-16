@@ -6,6 +6,16 @@ export type Employee = {
   joiningDate: string;        // ISO date string
   address: string;
   mobile: string;             // keep as string to preserve leading zeros
+  createdAt: string
+  updatedAt: string
 };
 
 export type NewEmployee = Omit<Employee, "id">;
+
+
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  errors?: string[];
+}
