@@ -19,6 +19,7 @@ interface ButtonProps {
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   arialabel?: string;
+  isTestID?:string
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -36,6 +37,7 @@ const Button: React.FC<ButtonProps> = ({
   arialabel,
   onMouseEnter,
   onMouseLeave,
+  isTestID
 }) => {
   const baseStyles =
     "flex items-center justify-center gap-0 px-3 py-2 group transition-all duration-400 ease-in-out w-full max-w-max relative";
@@ -60,6 +62,7 @@ const Button: React.FC<ButtonProps> = ({
       type={type}
       aria-label={arialabel}
       className={clsx(baseStyles, variantStyles[variant], className)}
+      data-testid={isTestID}
     >
       {loading ? (
         <Loader loaderFullScreen={false} isLoading={true} size="sm" color="border-red-600" />

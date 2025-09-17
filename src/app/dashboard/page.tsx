@@ -35,11 +35,14 @@ function DashboardPage() {
           <div className="container">
             <div className="flex items-center justify-between">
               <h2 className="topbar-title">Employee Dashboard</h2>
-            <Button variant="textOnly"
-              onButtonClick={handleLogOut}
-              children={"Log Out"}
-              className="text-white font-bold text-[20px]"
-            />
+              <Button
+                variant="textOnly"
+                type="button"
+                onButtonClick={handleLogOut}
+                children={"Log Out"}
+                className="text-white font-bold text-[20px]"
+                isTestID={"log-out-btn-id"}
+              />
             </div>
           </div>
         </div>

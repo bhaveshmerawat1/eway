@@ -23,6 +23,7 @@ type InputProps = {
   isInlineText?: string;
   inputStyle?: string;
   id?: string;
+  isIconTestID?:string
 };
 
 const Input: React.FC<InputProps> = ({
@@ -45,6 +46,7 @@ const Input: React.FC<InputProps> = ({
   isInlineText,
   inputStyle = "",
   id,
+  isIconTestID
 
 }) => {
   return (
@@ -58,7 +60,7 @@ const Input: React.FC<InputProps> = ({
         )}
       >
         {icon && iconPosition === "left" && (
-          <Button className="mr-2 text-gray-500" variant="textOnly" children={icon} onButtonClick={onClickIcon} />
+          <Button className="mr-2 text-gray-500" type="button" isTestID={isIconTestID} variant="textOnly" children={icon} onButtonClick={onClickIcon} />
         )}
 
         <input
@@ -74,7 +76,7 @@ const Input: React.FC<InputProps> = ({
         />
 
         {icon && iconPosition === "right" && (
-          <Button className="ml-2 text-gray-500" variant="textOnly" children={icon} onButtonClick={onClickIcon} />
+          <Button className="ml-2 text-gray-500" type="button" isTestID={isIconTestID} variant="textOnly" children={icon} onButtonClick={onClickIcon} />
         )}
         {isInlineText && (
           <span className="text-gray-500 text-sm">{isInlineText}</span>

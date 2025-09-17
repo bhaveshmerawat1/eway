@@ -37,7 +37,7 @@ export default function SignupPage() {
   return (
     <div className="flex min-h-screen justify-center items-center bg-gray-100">
       <div className="bg-white shadow-lg rounded-xl p-6 w-2xl space-y-4">
-      <form
+      <form role="form"
         onSubmit={handleSubmit}
         className="relative space-y-4"
       >
@@ -70,6 +70,7 @@ export default function SignupPage() {
           inputLabel={true}
           inputLabelName='Password'
           maxLength={10}
+          isIconTestID="input-icon-id"
         />
         {error && <p className="text-red-500 text-sm">{error}</p>}
 

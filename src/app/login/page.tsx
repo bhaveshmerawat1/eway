@@ -35,7 +35,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen justify-center items-center bg-gray-100">
       <div className="bg-white shadow-lg rounded-xl p-6 w-2xl space-y-4">
 
-        <form
+        <form role="form"
           onSubmit={handleSubmit}
         >
           <h2 className="text-xl font-bold mb-2 text-[#7b4cf2]">Login</h2>
@@ -56,6 +56,7 @@ export default function LoginPage() {
             className={`w-full ${error ? 'border-red-500 bg-red-100' : 'border-gray-300 bg-white'}`}
             maxLength={30}
             labelStyle="mt-2"
+            
           />
 
           <Input
@@ -70,6 +71,7 @@ export default function LoginPage() {
             inputLabelName='Password'
             maxLength={10}
             labelStyle="mt-2"
+            isIconTestID="input-iconID"
           />
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="flex items-center justify-between w-full my-3">
