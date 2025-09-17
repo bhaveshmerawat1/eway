@@ -67,22 +67,29 @@ a {
 p,
 button,
 label,
-span,link
-a {
+span,
+link a {
   font-family: var(--font-myfont);
 }
 
-.bg-white-fff{
+.bg-white-fff {
   background-color: #ffffff;
 }
-.text-color-59{
- color: #595959
+
+.text-color-59 {
+  color: #595959
 }
 
-.colorGreen{
+.colorGreen {
   color: #01787a;
 }
 
-.bg-gray-444{
+.bg-gray-444 {
   background-color: #444444;
+}
+
+.textSignupBtn {
+  background-color: transparent !important;
+  color: #7b4cf2 !important;
+  padding: 0 !important;
 }

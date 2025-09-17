@@ -216,7 +216,7 @@ td {
 .action-group {
   display: flex;
   gap: 10px;
-  justify-content: space-between
+  justify-content: flex-start
 }
 
 table th:nth-child(7),

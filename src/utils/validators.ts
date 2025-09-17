@@ -14,7 +14,7 @@ export function validateEmployee(
   if (!Number.isFinite(ageNum) || ageNum < 16 || ageNum > 80)
     errors.age = "Age must be between 16 and 80";
 
-  if (!e.joiningDate) errors.joiningDate = "Joining date is required";
+  if (!e.joinedAt) errors.joinedAt = "Joining date is required";
   if (!e.address?.trim()) errors.address = "Address is required";
 
   if (!e.mobile?.trim()) {

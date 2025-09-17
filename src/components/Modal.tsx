@@ -20,7 +20,7 @@ const Modal: React.FC<ModalProps> = ({ open, title, onClose, children, width = 7
           {/* Modal title */}
           <h3 className="modal-title">{title}</h3>
           <Button 
-          onClick={onClose} 
+          onButtonClick={onClose} 
           variant="secondary" 
           children={"✕"} 
           arialabel="close" 

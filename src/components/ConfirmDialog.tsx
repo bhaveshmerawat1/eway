@@ -28,15 +28,16 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
         <Button 
           children={cancelText}
-          onClick={onCancel}
-          variant="secondary"
+          onButtonClick={onCancel}
+          variant="primary"
           arialabel={cancelText}
         />
         <Button 
         children={confirmText}
-        onClick={onConfirm}
+        onButtonClick={onConfirm}
         arialabel={'confirmDelete'}
-        variant="danger"
+        variant="secondary"
+        className="border border-red-600 "
         />
       </div>
     </Modal>

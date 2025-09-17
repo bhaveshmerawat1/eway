@@ -31,9 +31,10 @@ const SearchBar: React.FC = () => {
         onKeyDown={handleKeyDown}
         placeholder="Search employees..."
         aria-label="Search employees"
+        className=""
       />
       <Button
-        onClick={() => search.setSearchQuery?.(search.searchQuery)}
+        onButtonClick={() => search.setSearchQuery?.(search.searchQuery)}
         children={"Search"}
         arialabel="Search"
       />

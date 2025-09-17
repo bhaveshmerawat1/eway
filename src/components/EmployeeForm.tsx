@@ -10,7 +10,7 @@ const empty: NewEmployee = {
   firstName: "",
   lastName: "",
   age: 18,
-  joiningDate: "",
+  joinedAt: "",
   address: "",
   mobile: "",
 };
@@ -46,6 +46,7 @@ const EmployeeForm: React.FC = () => {
   ) => setFormInputVal((prev) => ({ ...prev, [key]: val }));
 
   const submit = (item: React.FormEvent) => {
+    console.log("submit form ===============",item)
     item.preventDefault();
     const validation = validateEmployee(
       formInputVal as NewEmployee,
@@ -99,15 +100,15 @@ const EmployeeForm: React.FC = () => {
         </Field>
         <Field
           label="Joining Date"
-          htmlFor="joiningDate"
-          error={errors.joiningDate}
+          htmlFor="joinedAt"
+          error={errors.joinedAt}
         >
           <input
             type="date"
-            id="joiningDate"
-            name="joiningDate"
-            value={formInputVal.joiningDate}
-            onChange={(val) => update("joiningDate", val.target.value)}
+            id="joinedAt"
+            name="joinedAt"
+            value={formInputVal.joinedAt}
+            onChange={(val) => update("joinedAt", val.target.value)}
           />
         </Field>
       </div>

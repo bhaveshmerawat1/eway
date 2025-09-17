@@ -1,34 +1,42 @@
 "use client";
 
-import React, { createContext, useContext, useMemo, useState, useRef, MutableRefObject } from "react";
-import { STORAGE_KEYS } from "@/utils/storage";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
-import useToggle from "@/hooks/useToggle";
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+  useEffect,
+  MutableRefObject,
+} from "react";
 import { Employee, NewEmployee } from "@/utils/EmployeeTypes";
-import { validateEmployee } from "@/utils/validators";
+import useToggle from "@/hooks/useToggle";
+import { api } from "@/lib/axios";
+import { useAuth } from "@/context/AuthContext"; // 👈 import auth
 
 interface EmployeeContextValue {
   allEmployees: {
     employees: Employee[];
-    createNewEmployee: (data: NewEmployee) => void;
-    updateEmployeeDetails: (data: Employee) => void;
+    createNewEmployee: (data: NewEmployee) => Promise<void>;
+    updateEmployeeDetails: (data: Employee) => Promise<void>;
     filtered: Employee[];
-  },
+    reloadEmployees: () => Promise<void>;
+  };
   search: {
     searchQuery: string;
     setSearchQuery: (val: string) => void;
-  },
+  };
   pageinfo: {
     currentPage: number;
     setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
     itemsPerPage: number;
     totalPages: number;
     paginatedEmployees: Employee[];
-  },
+  };
   shorting: {
     sort: { field: keyof Employee; order: "asc" | "desc" };
     setSort: (field: keyof Employee) => void;
-  },
+  };
   modalAction: {
     employeeFormModal: ReturnType<typeof useToggle>;
     editing: Employee | null;
@@ -36,28 +44,16 @@ interface EmployeeContextValue {
     confirmEmployeeDeleteAction: ReturnType<typeof useToggle>;
     toDeleteRef: MutableRefObject<Employee | null>;
     askToEmpDelete: (emp: Employee) => void;
-    confirmDelete: () => void;
-  }
+    confirmDelete: () => Promise<void>;
+    isLoading: boolean
+    // setIsLoading: (val: boolean) => void
+  };
 }
 
 const EmployeeContext = createContext<EmployeeContextValue | null>(null);
 
-// seed data
-const seed: Employee[] = [
-  {
-    id: "e1", firstName: "Pierre", lastName: "Fontaine", age: 32, joiningDate: "2023-01-10",
-    address: "New York, USA", mobile: "5550101010"
-  },
-  {
-    id: "e2", firstName: "Rajesh", lastName: "Royal", age: 28, joiningDate: "2022-06-20",
-    address: "Ajmer, IN", mobile: "9876543210"
-  },
-];
-
 export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { getLocalStorage, setLocalStorage, deleteLocalStorage, localStorageIsReady } =
-    useLocalStorage<Employee[]>(STORAGE_KEYS.EMPLOYEES, seed);
-  const [employees, setEmployees] = useState<Employee[]>(() => getLocalStorage(STORAGE_KEYS.EMPLOYEES) || seed);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [editing, setEditing] = useState<Employee | null>(null);
   const employeeFormModal = useToggle(false);
@@ -69,61 +65,98 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const { isAuthenticated, onLoginSuccess } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
-
-  React.useEffect(() => {
-    if (localStorageIsReady) {
-      setLocalStorage(STORAGE_KEYS.EMPLOYEES, employees);
+  // Only load employees when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      reloadEmployees();
+    } else {
+      setEmployees([]);
     }
-  }, [employees, localStorageIsReady, setLocalStorage]);
+  }, [isAuthenticated]);
 
-  // Create
-  function createNewEmployee(data: NewEmployee) {
-    const errs = validateEmployee(data);
-    if (Object.keys(errs).length) return;
+  // // Auto-reload right after login/signup
+  // useEffect(() => {
+  //   onLoginSuccess(() => {
+  //     reloadEmployees();
+  //   });
+  // }, [onLoginSuccess]);
 
-    const id = crypto.randomUUID();
-    const newEmp: Employee = { id, ...data };
-    setEmployees(prev => [newEmp, ...prev]);
-    employeeFormModal.close();
+// Fatch/Reload employee list 
+  async function reloadEmployees() {
+    try {
+      const res = await api.get("/employees");
+      setEmployees(res.data.employees || []);
+      setIsLoading(false)
+    } catch (err: any) {
+      if (err.response?.status === 401) {
+        setEmployees([]);
+        setIsLoading(false)
+      } else {
+        setIsLoading(false)
+        console.error("Failed to load employees", err.response?.data || err.message);
+      }
+    }
   }
 
-  // Update
-  function updateEmployeeDetails(data: Employee) {
-    setEmployees(prev => prev.map(e => e.id === data.id ? data : e));
-    setEditing(null);
+  // Create new employees
+  async function createNewEmployee(data: NewEmployee) {
+    try {
+      await api.post("/employees", data);
+      await reloadEmployees();
+      employeeFormModal.close();
+    } catch (err: any) {
+      console.error("Create failed", err.response?.data || err.message);
+    }
   }
 
-  // Delete
+  // Update existing employees
+  async function updateEmployeeDetails(data: Employee) {
+    setIsLoading(true)
+    try {
+      await api.put(`/employees/${data.id}`, data);
+      await reloadEmployees();
+      setEditing(null);
+    } catch (err: any) {
+      setIsLoading(false)
+      console.error("Update failed", err.response?.data || err.message);
+    }
+  }
+
+  // Delete 
   function askToEmpDelete(emp: Employee) {
     toDeleteRef.current = emp;
     confirmEmployeeDeleteAction.open();
   }
 
-  function confirmDelete() {
-    const mobileToDelete = toDeleteRef.current?.mobile;
-    if (!mobileToDelete) return;
-    setEmployees(prev => prev.filter(e => e.mobile !== mobileToDelete));
-    confirmEmployeeDeleteAction.close();
-    toDeleteRef.current = null;
-    // If no employees left, clear from storage
-    if (employees.length === 0) {
-      deleteLocalStorage(STORAGE_KEYS.EMPLOYEES);
+  async function confirmDelete() {
+    if (!toDeleteRef.current) return;
+    setIsLoading(true)
+    try {
+      await api.delete(`/employees/${toDeleteRef.current.id}`);
+      await reloadEmployees();
+      confirmEmployeeDeleteAction.close();
+      toDeleteRef.current = null;
+    } catch (err: any) {
+      setIsLoading(false)
+      console.error("Delete failed", err.response?.data || err.message);
     }
   }
-
 
   // Filter
   const filtered = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return employees;
     return employees.filter(emp =>
-      [emp.firstName, emp.lastName, emp.address, emp.mobile].some(value => value.toLowerCase().includes(q)) ||
-      String(emp.age).includes(q)
+      [emp.firstName, emp.lastName, emp.address, emp.mobile].some(value =>
+        value.toLowerCase().includes(q)
+      ) || String(emp.age).includes(q)
     );
   }, [employees, searchQuery]);
 
-  // Sorting logic
+  // Sorting
   const setSort = (field: keyof Employee) => {
     setSortState(prev =>
       prev.field === field
@@ -132,7 +165,7 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     );
   };
 
-  const sortedEmployees = React.useMemo(() => {
+  const sortedEmployees = useMemo(() => {
     if (!sort.field) return filtered;
     const { field, order } = sort;
     return [...filtered].sort((a, b) => {
@@ -151,42 +184,33 @@ export const EmployeeProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     currentPage * itemsPerPage
   );
 
-  // Check initial localstorage is ready or not
-  if (!localStorageIsReady) return null;
-
   return (
-    <EmployeeContext.Provider value={{
-      allEmployees: {
-        employees,
-        createNewEmployee,
-        updateEmployeeDetails,
-        filtered
-      },
-      search: {
-        searchQuery,
-        setSearchQuery,
-      },
-      pageinfo: {
-        currentPage,
-        setCurrentPage,
-        itemsPerPage,
-        totalPages,
-        paginatedEmployees,
-      },
-      shorting: {
-        sort,
-        setSort
-      },
-      modalAction: {
-        employeeFormModal,
-        editing,
-        setEditing,
-        confirmEmployeeDeleteAction,
-        askToEmpDelete,
-        confirmDelete,
-        toDeleteRef
-      }
-    }} > {children}</EmployeeContext.Provider>
+    <EmployeeContext.Provider
+      value={{
+        allEmployees: {
+          employees,
+          createNewEmployee,
+          updateEmployeeDetails,
+          filtered,
+          reloadEmployees,
+        },
+        search: { searchQuery, setSearchQuery },
+        pageinfo: { currentPage, setCurrentPage, itemsPerPage, totalPages, paginatedEmployees },
+        shorting: { sort, setSort },
+        modalAction: {
+          employeeFormModal,
+          editing,
+          setEditing,
+          confirmEmployeeDeleteAction,
+          askToEmpDelete,
+          confirmDelete,
+          toDeleteRef,
+          isLoading
+        },
+      }}
+    >
+      {children}
+    </EmployeeContext.Provider>
   );
 };
 

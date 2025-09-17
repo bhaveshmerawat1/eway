@@ -3,7 +3,7 @@ export type Employee = {
   firstName: string;
   lastName: string;
   age: number;
-  joiningDate: string;        // ISO date string
+  joinedAt: string;        // ISO date string
   address: string;
   mobile: string;             // keep as string to preserve leading zeros
 };
