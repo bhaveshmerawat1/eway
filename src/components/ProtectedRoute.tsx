@@ -20,7 +20,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   }
 
   if (!isAuthenticated) {
-    return null; // while redirecting
+    return null;
   }
 
   return <>{children}</>;

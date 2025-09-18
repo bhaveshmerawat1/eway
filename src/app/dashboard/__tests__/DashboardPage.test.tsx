@@ -4,7 +4,6 @@ import DashboardPage from "@/app/dashboard/page"
 import { EmployeeProvider } from "@/context/EmployeeContext";
 import { useRouter } from "next/navigation";
 import ProtectedRoute from "@/components/ProtectedRoute";
-// ---- Module mocks ----
 
 // Mock api (axios wrapper)
 jest.mock("@/lib/axios", () => {
@@ -23,7 +22,7 @@ import { api } from "@/lib/axios";
 jest.mock("@/context/AuthContext", () => ({
   useAuth: jest.fn(),
 }));
-import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 // Mock next/navigation
 jest.mock("next/navigation", () => ({
@@ -180,16 +179,13 @@ describe("DashboardPage integration (EmployeeContext + UI)", () => {
     const addBtn = await screen.findByTestId("add-new-employee-id");
     fireEvent.click(addBtn);
 
-    // Modal should open (EmployeeForm rendered inside). Modal's close button has aria-label "close"
-    // Fill EmployeeForm inputs (ids used match your EmployeeForm)
     const firstName = screen.getByLabelText(/First Name/i) || screen.getByLabelText("firstName");
     // The EmployeeForm uses label + input, but to be robust, query by id fallback:
     const firstNameInput =
       screen.queryByLabelText(/First Name/i) ||
       screen.getByRole("textbox", { name: /first name/i }) ||
-      screen.getByDisplayValue(""); // fallback
+      screen.getByDisplayValue("");
 
-    // More reliable direct get by id:
     const fname = screen.getByRole("textbox", { name: /First Name/i }) || screen.getByLabelText("firstName", { selector: "input", exact: false });
     // But RTL queries above might vary; safer: select by id using document.getElementById
     const fIn = document.getElementById("firstName") as HTMLInputElement;
@@ -199,7 +195,6 @@ describe("DashboardPage integration (EmployeeContext + UI)", () => {
     const mobileIn = document.getElementById("mobileNumber") as HTMLInputElement;
     const addressIn = document.getElementById("address") as HTMLTextAreaElement;
 
-    // If inputs are not in DOM yet (sometimes label queries are more reliable), attempt to find via placeholders
     // Fill values (guarded with existence checks)
     if (fIn) fireEvent.change(fIn, { target: { value: "Alice" } });
     if (lIn) fireEvent.change(lIn, { target: { value: "Wonder" } });

@@ -1,4 +1,3 @@
-// lib/auth.ts
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { NextApiResponse } from "next";
