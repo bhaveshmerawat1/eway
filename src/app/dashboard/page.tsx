@@ -56,7 +56,7 @@ function DashboardPage() {
               type="button"
               variant="primary"
               arialabel="add new employee"
-              className=""
+              isTestID={"add-new-employee-id"}
             />
           </div>
           {/* Search bar */}

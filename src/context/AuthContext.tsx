@@ -16,7 +16,7 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
-  onLoginSuccess: (cb: () => void) => void; // ⭐ register hook
+  onLoginSuccess: (cb: () => void) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -24,7 +24,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [loginCallbacks, setLoginCallbacks] = useState<(() => void)[]>([]); // ⭐
+  const [loginCallbacks, setLoginCallbacks] = useState<(() => void)[]>([]); 
 
   useEffect(() => {
     refreshUser().finally(() => setLoading(false));
@@ -47,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await api.post("/auth/signup", { email, password });
       await refreshUser();
-      loginCallbacks.forEach(cb => cb()); // ⭐ trigger reloads
+      loginCallbacks.forEach(cb => cb()); // trigger reloads
     } catch (err: any) {
       setLoading(false)
       console.error("Signup failed", err.response?.data || err.message);
@@ -60,7 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await api.post("/auth/login", { email, password });
       await refreshUser();
-      loginCallbacks.forEach(cb => cb()); // ⭐ trigger reloads
+      loginCallbacks.forEach(cb => cb()); // trigger reloads
     } catch (err: any) {
       setLoading(false)
       console.error("Login failed", err.response?.data || err.message);

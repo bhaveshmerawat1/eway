@@ -38,7 +38,7 @@ export default function LoginPage() {
         <form role="form"
           onSubmit={handleSubmit}
         >
-          <h2 className="text-xl font-bold mb-2 text-[#7b4cf2]">Login</h2>
+          <h1 className="text-xl font-bold mb-2 text-[#7b4cf2]">Login</h1>
           <Input
             type='email'
             name='email'
@@ -62,6 +62,7 @@ export default function LoginPage() {
           <Input
             type={showPassword ? "text" : "password"}
             name='password'
+            id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             icon={showPassword ? <FaEyeSlash className="text-[#7b4cf2]" /> : <FaEye className="text-[#7b4cf2]" />}
@@ -75,12 +76,12 @@ export default function LoginPage() {
           />
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="flex items-center justify-between w-full my-3">
-            <Button children={"Login"} type="submit" variant={"primary"} className="bg-gray-600 px-5" />
+            <Button children={"Login"} type="submit" arialabel="login-btn" variant={"primary"} className="bg-gray-600 px-5" />
           </div>
         </form>
         <div className="flex items-center">
           <p className="pr-1">Create New Account </p>
-          <Button children={"Signup"} type="submit" onButtonClick={goToSignup} className="textSignupBtn border-0" />
+          <Button children={"Signup"} type="submit" arialabel="signup-btn" onButtonClick={goToSignup} className="textSignupBtn border-0" />
         </div>
       </div>
       {/* Loader */}

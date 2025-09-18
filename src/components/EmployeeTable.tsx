@@ -42,7 +42,6 @@ const TableHeaderCell: React.FC<{ field?: keyof Employee; children: React.ReactN
 
 const EmployeeTable: React.FC = () => {
   const { pageinfo,modalAction} = useEmployees();
-  console.log("====================", pageinfo)
   return (
     <div className="table-wrap">
       <table className="table">
