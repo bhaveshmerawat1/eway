@@ -11,7 +11,7 @@ const TestAuth = () => {
 
   return (
     <div>
-      <div data-testid="user">{user ? user.email : "no-user"}</div>
+      <div data-testid="userID">{user ? user.email : "no-user"}</div>
       <button
         onClick={() => login("test@example.com", "123456")}
         data-testid="login-btn"
@@ -51,7 +51,7 @@ describe("AuthProvider", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByTestId("user")).toHaveTextContent("me@example.com");
+      expect(screen.getByTestId("userID")).toHaveTextContent("me@example.com");
     });
   });
 
@@ -73,7 +73,7 @@ describe("AuthProvider", () => {
     fireEvent.click(screen.getByTestId("login-btn"));
 
     await waitFor(() => {
-      expect(screen.getByTestId("user")).toHaveTextContent("test@example.com");
+      expect(screen.getByTestId("userID")).toHaveTextContent("test@example.com");
     });
   });
 
