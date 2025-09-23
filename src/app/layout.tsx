@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import { EmployeeProvider } from "@/context/EmployeeContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { ProductProvider } from "@/context/ProductContext";
 
 
 const geistSans = Geist({
@@ -27,7 +28,9 @@ export default function RootLayout({
       >
         <AuthProvider>
           <EmployeeProvider>
+            <ProductProvider>
             {children}
+            </ProductProvider>
           </EmployeeProvider>
         </AuthProvider>
       </body>

@@ -29,22 +29,6 @@ export async function GET() {
 }
 
 
-// export async function POST(req: Request) {
-//   const userId = getUserId();
-//   if (!userId) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-
-//   const data = await req.json();
-//   const err = validateEmployee(data);
-//   if (err) return NextResponse.json({ error: err }, { status: 400 });
-
-//   const emp = await prisma.employee.create({
-//     data: { ...data, age: data.age ? Number(data.age) : null, userId },
-//   });
-
-//   return NextResponse.json({ employee: emp }, { status: 201 });
-// }
-
-
 export async function POST(req: Request) {
   const userId = await getUserId(); // ✅ await here
   if (!userId) {

@@ -1,10 +1,10 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import clsx from "clsx";
 import { FaExclamationCircle } from "react-icons/fa";
 import Button from "../Button/Button";
 
 type InputProps = {
-  type?: "text" | "search" | "number" | "password" | "tel" | "email" | "checkbox";
+  type?: "text" | "search" | "number" | "password" | "tel" | "email" | "checkbox" | "textarea" | "file";
   placeholder?: string;
   value?: string | number;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -23,10 +23,12 @@ type InputProps = {
   isInlineText?: string;
   inputStyle?: string;
   id?: string;
-  isIconTestID?:string
+  isIconTestID?:string;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
 };
 
-const Input: React.FC<InputProps> = ({
+const Input = forwardRef<HTMLInputElement, InputProps>(({
   type = "text",
   placeholder,
   value,
@@ -46,9 +48,11 @@ const Input: React.FC<InputProps> = ({
   isInlineText,
   inputStyle = "",
   id,
-  isIconTestID
+  isIconTestID,
+  onFocus,
+  onBlur
 
-}) => {
+}, ref) => {
   return (
     <>
       {inputLabel && <label htmlFor={id ?? name} className={clsx("block mb-1 text-[12px] text-color", labelStyle)}>{inputLabelName}</label>}
@@ -64,6 +68,7 @@ const Input: React.FC<InputProps> = ({
         )}
 
         <input
+          ref={ref} 
           type={type}
           placeholder={placeholder}
           value={value}
@@ -72,6 +77,8 @@ const Input: React.FC<InputProps> = ({
           name={name}
           maxLength={maxLength}
           id={id ?? name}
+          onFocus={onFocus}
+        onBlur={onBlur}
           className={clsx("w-full outline-none py-2 px-2 text-sm bg-transparent", inputStyle)}
         />
 
@@ -89,6 +96,7 @@ const Input: React.FC<InputProps> = ({
       )}
     </>
   );
-};
+});
+
 
 export default Input;
