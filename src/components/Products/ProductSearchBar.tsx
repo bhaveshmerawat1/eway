@@ -59,13 +59,13 @@ export default function ProductSearchBar() {
   }, []);
 
 
-  // Save to history (just local state, you can extend with localStorage)
+  // Save to history
   const handleSelect = (text: string) => {
     setQuery(text);
     setSuggestions([]);
     setHistory((prev) => {
       const newHist = [text, ...prev.filter((h) => h !== text)];
-      return newHist.slice(0, 10); // keep only 10 recent
+      return newHist.slice(0, 10);
     });
   };
 

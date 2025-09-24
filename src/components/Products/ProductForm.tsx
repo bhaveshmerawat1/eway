@@ -34,7 +34,6 @@ const ProductForm: React.FC = () => {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    console.log("handle chnage ==============",e.target.name)
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -44,7 +43,9 @@ const ProductForm: React.FC = () => {
     }
   };
 
+  // handle submit into formdata edit/ new product 
   const handleSubmit = async (e: React.FormEvent) => {
+    
     e.preventDefault();
     const formData = new FormData();
     formData.append("name", form.name);
@@ -61,7 +62,6 @@ const ProductForm: React.FC = () => {
     }
   };
 
-
   if (!productFormModal.isOpen) return null;
 
   return (
@@ -71,7 +71,7 @@ const ProductForm: React.FC = () => {
           <h2 className="text-lg font-semibold mb-4">
             {editing ? "Edit Product" : "Add Product"}
           </h2>
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form role="form" onSubmit={handleSubmit} className="space-y-3">
             <Input
               type="text"
               name="name"
@@ -115,6 +115,8 @@ const ProductForm: React.FC = () => {
               file:text-sm file:font-semibold
               file:bg-blue-50 file:text-blue-700
               hover:file:bg-blue-100"
+              aria-label="image"
+              placeholder="Upload image"
             />
 
             <div className="flex justify-end gap-2 mt-4">
