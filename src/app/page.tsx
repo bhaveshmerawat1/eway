@@ -1,11 +1,11 @@
 "use client";
-import Dashboard from './dashboard/page';
+import SearchAiPage from './searchAi/page';
 
 export default function Home() {
   return (
     <>
       <main>
-        <Dashboard />
+        <SearchAiPage />
       </main>
     </>
   );

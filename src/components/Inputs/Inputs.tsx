@@ -26,6 +26,7 @@ type InputProps = {
   isIconTestID?:string;
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  buttonType?: "button" | "submit"
 };
 
 const Input = forwardRef<HTMLInputElement, InputProps>(({
@@ -50,7 +51,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   id,
   isIconTestID,
   onFocus,
-  onBlur
+  onBlur,
+  buttonType
 
 }, ref) => {
   return (
@@ -83,7 +85,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
         />
 
         {icon && iconPosition === "right" && (
-          <Button className="ml-2 text-gray-500" type="button" arialabel="icon-btn" isTestID={isIconTestID} variant="textOnly" children={icon} onButtonClick={onClickIcon} />
+          <Button className="ml-2 text-gray-500" type={buttonType} arialabel="icon-btn" isTestID={isIconTestID} variant="textOnly" children={icon} onButtonClick={onClickIcon} />
         )}
         {isInlineText && (
           <span className="text-gray-500 text-sm">{isInlineText}</span>
