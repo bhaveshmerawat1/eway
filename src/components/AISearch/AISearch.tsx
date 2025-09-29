@@ -34,20 +34,20 @@ export default function AISearch() {
         className="relative w-4xl"
       >
         <Input
-          type="textarea"
+          type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Ask AI anything..."
           inputStyle=""
           iconPosition="right"
           buttonType="submit"
-          icon={loading ? <Loader size="sm" isLoading={loading} /> : <FaSearch className="text-sm" />}
+          icon={loading ? <Loader data-testid="loader" size="sm" isLoading={loading} /> : <FaSearch className="text-sm" />}
           isErrorMessage={searchError}
           isErrors={searchError.length >=1}
         />
       </form>
       <div className="relative w-4xl py-4">
-        <p className="text-md text-gray-600 font-semibold">{searchResult}</p>
+        <p className="text-md text-gray-700 font-normal">{searchResult}</p>
       </div>
     </>
   );
