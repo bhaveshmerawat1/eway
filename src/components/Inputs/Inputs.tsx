@@ -23,7 +23,7 @@ type InputProps = {
   isInlineText?: string;
   inputStyle?: string;
   id?: string;
-  isIconTestID?:string;
+  isIconTestID?: string;
   onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   buttonType?: "button" | "submit"
@@ -66,11 +66,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
         )}
       >
         {icon && iconPosition === "left" && (
-          <Button className="mr-2 text-gray-500" type="button" arialabel="icon-btn" isTestID={isIconTestID} variant="textOnly" children={icon} onButtonClick={onClickIcon} />
+          <Button className="mr-2 text-gray-500" type="button" arialabel="icon-btn" isTestID={isIconTestID} variant="textOnly" children={icon} onClick={onClickIcon} />
         )}
 
         <input
-          ref={ref} 
+          ref={ref}
           type={type}
           placeholder={placeholder}
           value={value}
@@ -80,12 +80,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
           maxLength={maxLength}
           id={id ?? name}
           onFocus={onFocus}
-        onBlur={onBlur}
+          onBlur={onBlur}
           className={clsx("w-full outline-none py-2 px-2 text-sm bg-transparent", inputStyle)}
         />
 
         {icon && iconPosition === "right" && (
-          <Button className="ml-2 text-gray-500" type={buttonType} arialabel="icon-btn" isTestID={isIconTestID} variant="textOnly" children={icon} onButtonClick={onClickIcon} />
+          <Button className="ml-2 text-gray-500" type={buttonType} arialabel="icon-btn" isTestID={isIconTestID} variant="textOnly" children={icon} onClick={onClickIcon} />
         )}
         {isInlineText && (
           <span className="text-gray-500 text-sm">{isInlineText}</span>
