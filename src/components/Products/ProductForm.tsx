@@ -45,7 +45,7 @@ const ProductForm: React.FC = () => {
 
   // handle submit into formdata edit/ new product 
   const handleSubmit = async (e: React.FormEvent) => {
-    
+
     e.preventDefault();
     const formData = new FormData();
     formData.append("name", form.name);
@@ -65,7 +65,7 @@ const ProductForm: React.FC = () => {
   if (!productFormModal.isOpen) return null;
 
   return (
-   <>
+    <>
       <div className="fixed inset-0 flex items-center justify-center bg-black/40">
         <div className="bg-white rounded-lg p-6 w-full max-w-lg shadow-lg">
           <h2 className="text-lg font-semibold mb-4">
@@ -124,7 +124,7 @@ const ProductForm: React.FC = () => {
                 children="Cancel"
                 arialabel="cancelBtn"
                 type="button"
-                onButtonClick={() => {
+                onClick={() => {
                   productFormModal.close();
                   setEditing(null);
                 }}
@@ -143,7 +143,7 @@ const ProductForm: React.FC = () => {
         </div>
       </div>
 
-   </>
+    </>
   );
 };
 

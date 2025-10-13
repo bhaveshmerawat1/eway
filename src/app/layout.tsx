@@ -29,7 +29,7 @@ export default function RootLayout({
         <AuthProvider>
           <EmployeeProvider>
             <ProductProvider>
-            {children}
+              {children}
             </ProductProvider>
           </EmployeeProvider>
         </AuthProvider>

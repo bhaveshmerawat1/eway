@@ -34,7 +34,7 @@ const SearchBar: React.FC = () => {
         className=""
       />
       <Button
-        onButtonClick={() => search.setSearchQuery?.(search.searchQuery)}
+        onClick={() => search.setSearchQuery?.(search.searchQuery)}
         children={"Search"}
         arialabel="Search"
       />

@@ -23,21 +23,21 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   cancelText = "Cancel",
 }) => {
   return (
-    <Modal open={open} onClose={onCancel} title={title} width={420}>
+    <Modal open={open} onClose={onCancel} title={title} width={500}>
       <p style={{ marginBottom: 16 }}>{message}</p>
       <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
-        <Button 
+        <Button
           children={cancelText}
-          onButtonClick={onCancel}
+          onClick={onCancel}
           variant="primary"
           arialabel={cancelText}
         />
-        <Button 
-        children={confirmText}
-        onButtonClick={onConfirm}
-        arialabel={'confirmDelete'}
-        variant="secondary"
-        className="border border-red-600 "
+        <Button
+          children={confirmText}
+          onClick={onConfirm}
+          arialabel={'confirmDelete'}
+          variant="primary"
+          className="px-4"
         />
       </div>
     </Modal>

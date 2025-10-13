@@ -6,7 +6,7 @@ import Loader from "../Loader/Loader";
 
 interface ButtonProps {
   children: React.ReactNode;
-  onButtonClick?: () => void;
+  onClick?: () => void;
   disabled?: boolean;
   className?: string;
   icon?: React.ReactNode;
@@ -19,12 +19,12 @@ interface ButtonProps {
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   arialabel?: string;
-  isTestID?:string
+  isTestID?: string
 };
 
 const Button: React.FC<ButtonProps> = ({
   children,
-  onButtonClick,
+  onClick,
   disabled = false,
   className = "",
   icon,
@@ -55,7 +55,7 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      onClick={onButtonClick}
+      onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       disabled={disabled || loading}
