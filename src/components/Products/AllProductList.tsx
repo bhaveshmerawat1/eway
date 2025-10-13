@@ -4,7 +4,7 @@ import React from 'react'
 import Button from "../Button/Button";
 
 function AllProductList() {
-  const { products, modalAction, addItemToCart } = useProducts();
+  const { products, addItemToCart } = useProducts();
   const handleAddToCart = (product: any) => {
     addItemToCart(product)
   }
