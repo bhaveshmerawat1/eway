@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useRef, useState } from "r
 import { api } from "@/lib/axios";
 import useToggle from "@/hooks/useToggle";
 
+// --- Product Interface ---
 interface Product {
   id: string;
   name: string;
@@ -13,21 +14,30 @@ interface Product {
   imageUrl?: string;
 }
 
-interface CartItem extends Product {
+// --- Cart Item Interface ---
+interface CartItem {
+  id: string;
+  productId: string;
   quantity: number;
+  createdAt: string;
+  product: Product; // ✅ nested product
 }
 
+// --- Context Value Interface ---
 interface ProductContextValue {
   products: Product[];
   reloadProducts: () => Promise<void>;
   createProduct: (data: FormData) => Promise<void>;
   updateProduct: (id: string, data: FormData) => Promise<void>;
   deleteProduct: (id: string) => Promise<void>;
+
   cartItems: CartItem[];
-  addItemToCart: (product: Product) => void;
-  removeItemFromCart: (productId: string) => void;
-  clearCart: () => void;
-  isLoading: boolean
+  addItemToCart: (product: Product) => Promise<void>;
+  removeItemFromCart: (id: string) => Promise<void>;
+  clearCart: () => Promise<void>;
+  fetchCart: () => Promise<void>;
+
+  isLoading: boolean;
   modalAction: {
     productFormModal: ReturnType<typeof useToggle>;
     editing: Product | null;
@@ -36,29 +46,40 @@ interface ProductContextValue {
     toDeleteRef: React.MutableRefObject<Product | null>;
     askToDelete: (p: Product) => void;
     confirmDelete: () => Promise<void>;
-    addToCart: ReturnType<typeof useToggle>;
+    addToCartModal: ReturnType<typeof useToggle>;
   };
 }
 
+// --- Context Initialization ---
 const ProductContext = createContext<ProductContextValue | null>(null);
 
 export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Product states
   const [products, setProducts] = useState<Product[]>([]);
   const [editing, setEditing] = useState<Product | null>(null);
   const productFormModal = useToggle(false);
   const confirmDeleteModal = useToggle(false);
   const toDeleteRef = useRef<Product | null>(null);
-  const addToCart = useToggle(false);
+
+  // Cart states
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const addToCartModal = useToggle(false);
+
+  // Loader
   const [isLoading, setIsLoading] = useState(false);
 
-  async function reloadProducts() {
-    const res = await api.get("/products");
-    setProducts(res.data.products || []);
-  }
+  // Fetch all products
+  const reloadProducts = async () => {
+    try {
+      const res = await api.get("/products");
+      setProducts(res.data.products || []);
+    } catch (err) {
+      console.error("Fetch products error:", err);
+    }
+  };
 
+  // CRUD: Create Product
   async function createProduct(data: FormData) {
-    console.log("create product ============", data)
     try {
       const response = await api.post("/products", data);
       // Refresh product list
@@ -71,12 +92,10 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }
 
+  // CRUD: Update Product
   async function updateProduct(id: string, formData: FormData) {
     try {
-      const response = await api.put(`/products/${id}`, formData); // FormData with file
-
-      console.log("Product updated:", response.data.product);
-
+      const response = await api.put(`/products/${id}`, formData);
       await reloadProducts();
       productFormModal.close();
     } catch (err: any) {
@@ -85,15 +104,21 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }
 
+  // CRUD: Delete Product
   async function deleteProduct(id: string) {
-    await api.delete(`/products/${id}`);
-    await reloadProducts();
+    try {
+      await api.delete(`/products/${id}`);
+      await reloadProducts();
+    } catch (err: any) {
+      console.error("Delete product error:", err);
+    }
   }
 
-  function askToDelete(p: Product) {
+  // --- Delete Modal Actions ---
+  const askToDelete = (p: Product) => {
     toDeleteRef.current = p;
     confirmDeleteModal.open();
-  }
+  };
 
   async function confirmDelete() {
     if (!toDeleteRef.current) return;
@@ -102,47 +127,57 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
     toDeleteRef.current = null;
   }
 
-  // Add to cart logic
-  async function addItemToCart(product: Product) {
+  // CART MANAGEMENT (connected with Next API)
+  const fetchCart = async () => {
+    try {
+      const res = await api.get("/products/cart");
+      setCartItems(res.data || []);
+    } catch (err) {
+      console.error("Fetch cart error:", err);
+    }
+  };
+
+  const addItemToCart = async (product: Product) => {
     try {
       setIsLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setCartItems((prev) => {
-        const existing = prev.find((item) => item.id === product.id);
-        if (existing) {
-          // Update quantity if already in cart
-          return prev.map((item) =>
-            item.id === product.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          );
-        }
-        // Add new item to cart
-        return [...prev, { ...product, quantity: 1 }];
-      });
-      // Open the modal after successful update
-      addToCart.open();
+      await api.post("/products/cart", { productId: product.id, quantity: 1 });
+      await fetchCart();
+      addToCartModal.open();
     } catch (err) {
-      console.error("Failed to add item to cart:", err);
+      console.error("Add to cart error:", err);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
-  function removeItemFromCart(productId: string) {
-    setIsLoading(true);
-    setCartItems((prev) => prev.filter((item) => item.id !== productId));
-    setIsLoading(false)
-  }
+  const removeItemFromCart = async (id: string) => {
+    try {
+      setIsLoading(true);
+      await api.delete("/products/cart", { data: { id } });
+      await fetchCart();
+    } catch (err) {
+      console.error("Remove cart item error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  function clearCart() {
-    setIsLoading(true);
-    setCartItems([]);
-    setIsLoading(false)
-  }
+  const clearCart = async () => {
+    try {
+      setIsLoading(true);
+      await api.delete("/products/cart/clear");
+      setCartItems([]);
+    } catch (err) {
+      console.error("Clear cart error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  // Fetch initial data
   useEffect(() => {
     reloadProducts();
+    fetchCart();
   }, []);
 
   return (
@@ -157,6 +192,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
         addItemToCart,
         removeItemFromCart,
         clearCart,
+        fetchCart,
         isLoading,
         modalAction: {
           productFormModal,
@@ -166,7 +202,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
           toDeleteRef,
           askToDelete,
           confirmDelete,
-          addToCart
+          addToCartModal,
         },
       }}
     >

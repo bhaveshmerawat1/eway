@@ -1,5 +1,6 @@
 "use client";
 import React, { createContext, useContext, useState } from "react";
+import { api } from "@/lib/axios";
 
 interface UserInfo {
   firstName: string;
@@ -23,6 +24,9 @@ interface CheckoutContextType {
   setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>;
   deliveryInfo: DeliveryInfo;
   setDeliveryInfo: React.Dispatch<React.SetStateAction<DeliveryInfo>>;
+  allCheckouts: any[];
+  saveCheckout: () => Promise<void>;
+  fetchCheckouts: () => Promise<void>;
 }
 
 const CheckoutContext = createContext<CheckoutContextType | null>(null);
@@ -42,10 +46,34 @@ export const CheckoutProvider = ({ children }: { children: React.ReactNode }) =>
     province: "",
     postalCode: "",
   });
+  const [allCheckouts, setAllCheckouts] = useState<any[]>([]);
 
+  const saveCheckout = async () => {
+    console.log("checkout order==============", userInfo, deliveryInfo)
+    try {
+      const res = await api.post("/products/checkout", { userInfo, deliveryInfo });
+      console.log("✅ Checkout saved:", res.data);
+    } catch (err: any) {
+      console.error("❌ Save checkout error:", err);
+    }
+  };
+
+  const fetchCheckouts = async () => {
+    try {
+      const res = await api.get("/products/checkout");
+      setAllCheckouts(res.data);
+      console.log("📦 All checkouts:", res.data);
+    } catch (err: any) {
+      console.error("❌ Fetch checkouts error:", err);
+    }
+  };
   return (
     <CheckoutContext.Provider
-      value={{ step, setStep, userInfo, setUserInfo, deliveryInfo, setDeliveryInfo }}
+      value={{
+        step, setStep, userInfo, setUserInfo, deliveryInfo,
+        setDeliveryInfo, allCheckouts, saveCheckout,
+        fetchCheckouts
+      }}
     >
       {children}
     </CheckoutContext.Provider>

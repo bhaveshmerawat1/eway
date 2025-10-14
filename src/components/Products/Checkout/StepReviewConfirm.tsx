@@ -3,9 +3,10 @@ import { useCheckout } from "@/context/CheckoutContext";
 import Button from "@/components/Button/Button";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useRouter } from "next/navigation";
+import { useProducts } from "@/context/ProductContext";
 
 export default function StepReviewConfirm() {
-  const { userInfo, deliveryInfo, setStep } = useCheckout();
+  const { userInfo, deliveryInfo, setStep, saveCheckout } = useCheckout();
   const [isModalOpen, setIsModalOpen] = useState(false)
   const router = useRouter();
 
@@ -14,6 +15,7 @@ export default function StepReviewConfirm() {
   };
 
   const handleConfirmOrder = () => {
+    saveCheckout()
     setIsModalOpen(true)
   }
 

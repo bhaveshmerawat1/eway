@@ -37,8 +37,41 @@ model Product {
   description String?
   price       Float
   size        String?
-  color       String?
   imageUrl    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+}
+
+model CartItem {
+  id         String   @id @default(cuid())
+  productId  String   // ✅ matches Product.id
+  quantity   Int
+  createdAt  DateTime @default(now())
+  product    Product  @relation(fields: [productId], references: [id])
+}
+
+model Order {
+  id           String  @id @default(cuid())
+  firstName    String
+  lastName     String?
+  email        String
+  phone        String
+  address      String
+  city         String
+  postalCode   String
+  totalAmount  Float
+  createdAt    DateTime    @default(now())
+  orderItems   OrderItem[]
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
 }

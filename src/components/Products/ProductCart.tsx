@@ -10,16 +10,17 @@ import { useRouter } from "next/navigation";
 const ProductCart: React.FC = () => {
   const router = useRouter();
   const { modalAction, isLoading } = useProducts();
-  const { addToCart } = modalAction;
+  const { addToCartModal } = modalAction;
   const { cartItems, removeItemFromCart } = useProducts();
   const handleCheckOut = () => {
+    addToCartModal.close
     router.push("/products/checkout");
   }
   if (cartItems.length === 0) return null;
 
   return (
     <div>
-      <Dialog open={addToCart.isOpen} onClose={addToCart.close} className="relative z-10">
+      <Dialog open={addToCartModal.isOpen} onClose={addToCartModal.close} className="relative z-10">
         <DialogBackdrop
           transition
           className="fixed inset-0 bg-gray-500/75 transition-opacity duration-500 ease-in-out data-closed:opacity-0"
@@ -39,7 +40,7 @@ const ProductCart: React.FC = () => {
                         <Button
                           type="button"
                           variant="primary"
-                          onClick={addToCart.close}
+                          onClick={addToCartModal.close}
                           className="relative -m-2 p-2"
                           children={undefined}
                           icon={<IoClose />}
@@ -50,29 +51,29 @@ const ProductCart: React.FC = () => {
                     <div className="my-8">
                       <div className="flow-root">
                         <ul role="list" className="-my-6 divide-y divide-gray-200">
-                          {cartItems.map((product) => (
-                            <li key={product.id} className="flex py-6">
+                          {cartItems.map((items) => (
+                            <li key={items.product.id} className="flex py-6">
                               <div className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                <img alt={product.name} src={product.imageUrl} className="size-full object-cover" />
+                                <img alt={items.product.name} src={items.product.imageUrl} className="size-full object-cover" />
                               </div>
                               <div className="ml-4 flex flex-1 flex-col">
                                 <div>
                                   <div className="flex justify-between text-base font-medium text-gray-900">
                                     <h3>
-                                      <a href={product.name}>{product.name}</a>
+                                      <a href={items.product.name}>{items.product.name}</a>
                                     </h3>
-                                    <p className="ml-4">{product.price}</p>
+                                    <p className="ml-4">{items.product.price}</p>
                                   </div>
-                                  <p className="mt-1 text-sm text-gray-500">{product.description}</p>
+                                  <p className="mt-1 text-sm text-gray-500">{items.product.description}</p>
                                 </div>
                                 <div className="flex flex-1 items-center justify-between text-sm">
-                                  <p className="text-gray-500 font-semibold">Qty {product.quantity}</p>
+                                  <p className="text-gray-500 font-semibold">Qty {items.quantity}</p>
                                   <div className="flex">
                                     <Button
                                       children={"Remove"}
                                       type='button'
                                       variant="textOnly"
-                                      onClick={() => removeItemFromCart(product.id)}
+                                      onClick={() => removeItemFromCart(items.id)}
                                       icon={
                                         isLoading ? <Loader size='sm' isLoading={isLoading} /> : null
                                       }
