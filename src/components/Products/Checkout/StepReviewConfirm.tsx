@@ -11,6 +11,7 @@ export default function StepReviewConfirm() {
   const router = useRouter();
 
   const handleConfirm = () => {
+    setIsModalOpen(false);
     router.push("/products");
   };
 

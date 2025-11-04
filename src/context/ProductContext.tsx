@@ -58,7 +58,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [products, setProducts] = useState<Product[]>([]);
   const [editing, setEditing] = useState<Product | null>(null);
   const productFormModal = useToggle(false);
-  const confirmDeleteModal = useToggle(false);
+  const confirmDeleteModal = useToggle(false);  
   const toDeleteRef = useRef<Product | null>(null);
 
   // Cart states

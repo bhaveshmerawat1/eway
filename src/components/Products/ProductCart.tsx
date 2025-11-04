@@ -13,14 +13,17 @@ const ProductCart: React.FC = () => {
   const { addToCartModal } = modalAction;
   const { cartItems, removeItemFromCart } = useProducts();
   const handleCheckOut = () => {
-    addToCartModal.close
+    modalClose();
     router.push("/products/checkout");
+  }
+  const modalClose = () => {
+    addToCartModal.close();
   }
   if (cartItems.length === 0) return null;
 
   return (
     <div>
-      <Dialog open={addToCartModal.isOpen} onClose={addToCartModal.close} className="relative z-10">
+      <Dialog open={addToCartModal.isOpen} onClose={modalClose} className="relative z-10">
         <DialogBackdrop
           transition
           className="fixed inset-0 bg-gray-500/75 transition-opacity duration-500 ease-in-out data-closed:opacity-0"

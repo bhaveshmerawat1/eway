@@ -1,11 +1,11 @@
 "use client";
-import Dashboard from './dashboard/page';
+import ProductsPage from './products/page';
 
 export default function Home() {
   return (
     <>
       <main>
-        <Dashboard />
+        <ProductsPage />
       </main>
     </>
   );
