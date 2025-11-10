@@ -23,6 +23,13 @@ interface CartItem {
   product: Product; // ✅ nested product
 }
 
+// --- Special Order Interface ---
+interface SpecialOrder {
+  id: string;
+  productName: string;
+  quantity: number;
+}
+
 // --- Context Value Interface ---
 interface ProductContextValue {
   products: Product[];
@@ -48,6 +55,8 @@ interface ProductContextValue {
     confirmDelete: () => Promise<void>;
     addToCartModal: ReturnType<typeof useToggle>;
   };
+  orders: SpecialOrder[];
+  addOrder: (order: SpecialOrder) => Promise<void>;
 }
 
 // --- Context Initialization ---
@@ -58,7 +67,7 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [products, setProducts] = useState<Product[]>([]);
   const [editing, setEditing] = useState<Product | null>(null);
   const productFormModal = useToggle(false);
-  const confirmDeleteModal = useToggle(false);  
+  const confirmDeleteModal = useToggle(false);
   const toDeleteRef = useRef<Product | null>(null);
 
   // Cart states
@@ -67,6 +76,9 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Loader
   const [isLoading, setIsLoading] = useState(false);
+
+  // Special Orders states
+  const [orders, setOrders] = useState<SpecialOrder[]>([]);
 
   // Fetch all products
   const reloadProducts = async () => {
@@ -174,10 +186,35 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
+
+  //  Special Orders 
+  const addOrder = async (order: SpecialOrder) => {
+    console.log("Adding special order:", order);
+    try {
+      setIsLoading(true);
+      const res = await api.post("/products/special-order", order);
+      specialProducts();
+    } catch (err) {
+      console.error("Error submitting special order:", err);
+      setIsLoading(false);
+    }
+  }
+
+  const specialProducts = async () => {
+    try {
+      const res = await api.get("/products/special-order");
+      setOrders(res.data || []);
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Fetch products error:", err);
+    }
+  };
+
   // Fetch initial data
   useEffect(() => {
     reloadProducts();
     fetchCart();
+    specialProducts();
   }, []);
 
   return (
@@ -204,6 +241,8 @@ export const ProductProvider: React.FC<{ children: React.ReactNode }> = ({ child
           confirmDelete,
           addToCartModal,
         },
+        addOrder,
+        orders,
       }}
     >
       {children}

@@ -75,3 +75,11 @@ model OrderItem {
   quantity  Int
   price     Float
 }
+
+
+model SpecialOrder {
+  id          String   @id @default(cuid())
+  productName String
+  quantity    Int
+  createdAt   DateTime @default(now())
+}

@@ -11,7 +11,7 @@ const ProductCart: React.FC = () => {
   const router = useRouter();
   const { modalAction, isLoading } = useProducts();
   const { addToCartModal } = modalAction;
-  const { cartItems, removeItemFromCart } = useProducts();
+  const { cartItems, removeItemFromCart, orders } = useProducts();
   const handleCheckOut = () => {
     modalClose();
     router.push("/products/checkout");
@@ -86,6 +86,36 @@ const ProductCart: React.FC = () => {
                               </div>
                             </li>
                           ))}
+
+                        </ul>
+                        <ul role="list" className="-my-6 divide-y divide-gray-200">
+                          {orders.map((items) => (
+                            <li key={items.id} className="flex py-6">
+                              <div className="ml-4 flex flex-1 flex-col">
+                                <div>
+                                  <div className="flex justify-between text-base font-medium text-gray-900">
+                                    <h3>
+                                      <a href={items.productName}>{items.productName}</a>
+                                    </h3>
+                                  </div>
+                                </div>
+                                <div className="flex flex-1 items-center justify-between text-sm">
+                                  <p className="text-gray-500 font-semibold">Qty {items.quantity}</p>
+                                  <div className="flex">
+                                    <Button
+                                      children={"Remove"}
+                                      type='button'
+                                      variant="textOnly"
+                                      icon={
+                                        isLoading ? <Loader size='sm' isLoading={isLoading} /> : null
+                                      }
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </li>
+                          ))}
+
                         </ul>
                       </div>
                     </div>

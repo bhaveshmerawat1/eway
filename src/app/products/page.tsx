@@ -8,6 +8,8 @@ import ProductForm from "@/components/Products/ProductForm";
 import ProductCart from "@/components/Products/ProductCart";
 import Loader from "@/components/Loader/Loader";
 import { FaShoppingCart } from "react-icons/fa";
+import SpecialOrder from "@/components/Products/SpecialOrder";
+import SpecialOrderProductListForm from "@/components/Products/SpecialOrder";
 
 export default function ProductsPage() {
   const { modalAction, isLoading } = useProducts();
@@ -44,8 +46,9 @@ export default function ProductsPage() {
         </div>
       </div>
       <div className="container">
-        <AllProductList />
-        <ProductForm />
+        {/* <AllProductList /> */}
+        <SpecialOrderProductListForm />
+        {/* <ProductForm />*/}
         <ProductCart />
         <Loader size="lg" isLoading={isLoading} loaderFullScreen={true} />
       </div>
