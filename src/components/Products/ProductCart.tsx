@@ -9,9 +9,8 @@ import { useRouter } from "next/navigation";
 
 const ProductCart: React.FC = () => {
   const router = useRouter();
-  const { modalAction, isLoading } = useProducts();
+  const { modalAction, isLoading, orders } = useProducts();
   const { addToCartModal } = modalAction;
-  const { cartItems, removeItemFromCart, orders } = useProducts();
   const handleCheckOut = () => {
     modalClose();
     router.push("/products/checkout");
@@ -19,7 +18,7 @@ const ProductCart: React.FC = () => {
   const modalClose = () => {
     addToCartModal.close();
   }
-  if (cartItems.length === 0) return null;
+  if (orders.length === 0) return null;
 
   return (
     <div>
@@ -54,41 +53,6 @@ const ProductCart: React.FC = () => {
                     <div className="my-8">
                       <div className="flow-root">
                         <ul role="list" className="-my-6 divide-y divide-gray-200">
-                          {cartItems.map((items) => (
-                            <li key={items.product.id} className="flex py-6">
-                              <div className="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200">
-                                <img alt={items.product.name} src={items.product.imageUrl} className="size-full object-cover" />
-                              </div>
-                              <div className="ml-4 flex flex-1 flex-col">
-                                <div>
-                                  <div className="flex justify-between text-base font-medium text-gray-900">
-                                    <h3>
-                                      <a href={items.product.name}>{items.product.name}</a>
-                                    </h3>
-                                    <p className="ml-4">{items.product.price}</p>
-                                  </div>
-                                  <p className="mt-1 text-sm text-gray-500">{items.product.description}</p>
-                                </div>
-                                <div className="flex flex-1 items-center justify-between text-sm">
-                                  <p className="text-gray-500 font-semibold">Qty {items.quantity}</p>
-                                  <div className="flex">
-                                    <Button
-                                      children={"Remove"}
-                                      type='button'
-                                      variant="textOnly"
-                                      onClick={() => removeItemFromCart(items.id)}
-                                      icon={
-                                        isLoading ? <Loader size='sm' isLoading={isLoading} /> : null
-                                      }
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </li>
-                          ))}
-
-                        </ul>
-                        <ul role="list" className="-my-6 divide-y divide-gray-200">
                           {orders.map((items) => (
                             <li key={items.id} className="flex py-6">
                               <div className="ml-4 flex flex-1 flex-col">
@@ -119,7 +83,7 @@ const ProductCart: React.FC = () => {
                         </ul>
                       </div>
                     </div>
-                    <div className="border-t border-gray-200 pt-4 pb-3">
+                    {/* <div className="border-t border-gray-200 pt-4 pb-3">
                       <Button
                         children={"Checkout"}
                         type='button'
@@ -127,7 +91,7 @@ const ProductCart: React.FC = () => {
                         onClick={handleCheckOut}
                         className='max-w-full round-lg'
                       />
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </DialogPanel>

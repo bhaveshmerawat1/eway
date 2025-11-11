@@ -3,17 +3,13 @@
 import { useProducts } from "@/context/ProductContext";
 import Button from "@/components/Button/Button";
 import "@/assets/styles/common.css";
-import AllProductList from "@/components/Products/AllProductList";
-import ProductForm from "@/components/Products/ProductForm";
 import ProductCart from "@/components/Products/ProductCart";
 import Loader from "@/components/Loader/Loader";
 import { FaShoppingCart } from "react-icons/fa";
-import SpecialOrder from "@/components/Products/SpecialOrder";
 import SpecialOrderProductListForm from "@/components/Products/SpecialOrder";
 
 export default function ProductsPage() {
   const { modalAction, isLoading } = useProducts();
-  const modalOpen = modalAction?.productFormModal?.open;
   const cartModalOpen = modalAction?.addToCartModal?.open
   return (
     <div className="page">
@@ -33,22 +29,12 @@ export default function ProductsPage() {
                 isLeftIcon={true}
                 className="py-3"
               />
-              <Button
-                children={"+ Add New Product"}
-                onClick={modalOpen}
-                type="button"
-                variant="primary"
-                arialabel="add new Product"
-                isTestID={"add-new-Product-id"}
-              />
             </div>
           </div>
         </div>
       </div>
       <div className="container">
-        {/* <AllProductList /> */}
         <SpecialOrderProductListForm />
-        {/* <ProductForm />*/}
         <ProductCart />
         <Loader size="lg" isLoading={isLoading} loaderFullScreen={true} />
       </div>
