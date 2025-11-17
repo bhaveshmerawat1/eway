@@ -83,15 +83,6 @@ const ProductCart: React.FC = () => {
                         </ul>
                       </div>
                     </div>
-                    {/* <div className="border-t border-gray-200 pt-4 pb-3">
-                      <Button
-                        children={"Checkout"}
-                        type='button'
-                        variant="primary"
-                        onClick={handleCheckOut}
-                        className='max-w-full round-lg'
-                      />
-                    </div> */}
                   </div>
                 </div>
               </DialogPanel>
